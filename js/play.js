@@ -27,7 +27,6 @@ function play_cur() {
     var audio = document.getElementById('audio');
     set_msg('' + audio);
     audio.src = window.URL.createObjectURL(files[curidx]);
-    // audio.src = 'sound/doll_st_01.ogg';
     set_msg('' + audio.src);
     audio.play();
     audio.addEventListener('ended', play_next);
