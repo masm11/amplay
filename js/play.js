@@ -15,16 +15,19 @@ cursor.onsuccess = function() {
 	this.continue();
     } else {
 	set_msg('done.');
-
-set_msg('a: ' + document.getElementById('audio'));
-document.getElementById('audio').src = window.URL.createObjectURL(files[0]);
-// document.getElementById('audio').src = 'sound/doll_st_01.ogg';
-set_msg('b: ' + document.getElementById('audio').src);
-
+	curidx = 0;
+	play_cur();
     }
 }
 cursor.onerror = function() {
     document.write('error.');
+}
+
+function play_cur() {
+    set_msg('a: ' + document.getElementById('audio'));
+    document.getElementById('audio').src = window.URL.createObjectURL(files[curidx]);
+    // document.getElementById('audio').src = 'sound/doll_st_01.ogg';
+    set_msg('b: ' + document.getElementById('audio').src);
 }
 
 function play_next() {
