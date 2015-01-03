@@ -30,20 +30,13 @@ function play_cur() {
     // audio.src = 'sound/doll_st_01.ogg';
     set_msg('b: ' + audio.src);
     audio.play();
+    audio.addEventListener('ended', play_next);
 }
 
 function play_next() {
     if (++curidx >= files.length)
 	curidx = 0;
-    set_msg('' + files[curidx]);
-    audio = new Audio(files[curidx]);
-    audio.play();
-//    audio.addEventListener('ended', play_next);
-    
-    var ival = setInterval(function() {
-	clearInterval(ival);
-	play_next();
-    }, 5000);
+    play_cur();
 }
 
 function play_this(e) {
