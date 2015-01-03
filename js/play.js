@@ -40,7 +40,20 @@ function play_next() {
 
 function play_this(e) {
     set_msg('play_this');
-    set_msg('' + document.getElementById('file').value);
+    curidx++;
+    
+    filelist = document.getElementById('file').files;
+    set_msg('' + filelist[0].name);
+    
+    for (var i = 0; i < files.length; i++) {
+	var fn = files[i].name.substring(files[i].name.lastIndexOf('/') + 1);
+	if (fn == filelist[0].name) {
+	    curidx = i;
+	    break;
+	}
+    }
+    
+    play_cur();
     
     e.preventDefault();
 }
