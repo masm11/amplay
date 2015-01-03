@@ -10,7 +10,7 @@ var cursor = storage.enumerate();
 cursor.onsuccess = function() {
     if (this.result) {
 	var file = this.result;
-	set_msg(file.name);
+	// set_msg(file.name);
 	files.push(file);
 	this.continue();
     } else {
@@ -25,10 +25,10 @@ cursor.onerror = function() {
 
 function play_cur() {
     var audio = document.getElementById('audio');
-    set_msg('a: ' + audio);
+    set_msg('' + audio);
     audio.src = window.URL.createObjectURL(files[curidx]);
     // audio.src = 'sound/doll_st_01.ogg';
-    set_msg('b: ' + audio.src);
+    set_msg('' + audio.src);
     audio.play();
     audio.addEventListener('ended', play_next);
 }
