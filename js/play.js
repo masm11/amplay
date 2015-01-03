@@ -1,27 +1,16 @@
-console.log('log test');
-console.log('log test2');
-
 var files = [];
 var curidx = 0;
 
 var storage = navigator.getDeviceStorage('music');
-console.log('log test3' + storage);
 var cursor = storage.enumerate();
-console.log('test5' + cursor);
 cursor.onsuccess = function() {
-    console.log('test6' + this.result);
-    console.log('test6.1' + document.getElementById('msg').firstChild.nodeValue);
-    console.log('test6.3' + document.getElementById('msg').firstChild.nodeValue);
-    console.log('test6.4');
     if (this.result) {
 	var file = this.result;
 	document.getElementById('msg').firstChild.nodeValue = file.name;
 //	files.push(file.name);
 	files.push(file);
-	console.log('test7' + file.name);
 	this.continue();
     } else {
-	console.log('test8');
 	document.getElementById('msg').firstChild.nodeValue = 'done.';
 //	play_next();
 document.getElementById('msg').firstChild.nodeValue = 'd1.';
@@ -114,7 +103,6 @@ cursor.onerror = function() {
 function play_next() {
     if (++curidx >= files.length)
 	curidx = 0;
-    console.log(files[curidx].name);
     document.getElementById('msg').firstChild.nodeValue = '' + files[curidx];
     audio = new Audio(files[curidx]);
     audio.play();
@@ -127,7 +115,6 @@ function play_next() {
 }
 
 function play_this(e) {
-    console.log('play_this');
     document.getElementById('msg').firstChild.nodeValue = 'play_this';
     document.getElementById('msg').firstChild.nodeValue = '' + document.getElementById('file').value;
     
@@ -146,12 +133,10 @@ files = [
 */
 
 /*
-console.log('before onload');
 window.onload = function() {
     curidx = -1;
     play_next();
 };
-console.log('after onload');
 */
 
 // play_next();
