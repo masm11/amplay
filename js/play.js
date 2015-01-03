@@ -24,10 +24,11 @@ cursor.onerror = function() {
 }
 
 function play_cur() {
-    set_msg('a: ' + document.getElementById('audio'));
-    document.getElementById('audio').src = window.URL.createObjectURL(files[curidx]);
-    // document.getElementById('audio').src = 'sound/doll_st_01.ogg';
-    set_msg('b: ' + document.getElementById('audio').src);
+    var audio = document.getElementById('audio');
+    set_msg('a: ' + audio);
+    audio.src = window.URL.createObjectURL(files[curidx]);
+    // audio.src = 'sound/doll_st_01.ogg';
+    set_msg('b: ' + audio.src);
 }
 
 function play_next() {
