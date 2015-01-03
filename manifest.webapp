@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "name": "amplay",
-  "description": "A template with the bare minimum structure",
+  "description": "All Music Player",
   "launch_path": "/index.html",
   "icons": {
     "16": "/img/icons/icon16x16.png",
@@ -11,7 +11,7 @@
   },
   "developer": {
     "name": "Yuuki Harano",
-    "url": "http://example.com"
+    "url": "http://masm11.ddo.jp/~masm/"
   },
   "type": "privileged",
   "permissions": {
