@@ -29,6 +29,7 @@ function play_cur() {
     audio.src = window.URL.createObjectURL(files[curidx]);
     // audio.src = 'sound/doll_st_01.ogg';
     set_msg('b: ' + audio.src);
+    audio.play();
 }
 
 function play_next() {
