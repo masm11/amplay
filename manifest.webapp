@@ -21,7 +21,8 @@
 	},
 	"audio-channel-content" : {
 		"description" : "Play sound in background"
-	}
+	},
+	"fmradio" : {}
   },
   "installs_allowed_from": [
     "*"

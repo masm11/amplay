@@ -58,6 +58,31 @@ function play_this(e) {
     e.preventDefault();
 }
 
+function pause() {
+set_msg('stop1');
+    var audio = document.getElementById('audio');
+set_msg('stop2');
+    audio.pause();
+set_msg('stop3');
+}
+
+var radio = navigator.mozFMRadio;
+
+function play_or_stop() {
+set_msg('r1');
+    if (radio.antennaAvailable) {
+set_msg('r2');
+	play_cur();
+set_msg('r3');
+    } else {
+set_msg('r4');
+	pause();
+set_msg('r5');
+    }
+}
+
+radio.addEventListener('antennaavailablechange', play_or_stop);
+
 window.onload = function() {
     set_msg('onload1');
     pt = document.getElementById('play_this')
