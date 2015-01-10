@@ -16,6 +16,14 @@ function set_msg(str) {
     document.getElementById('msg5').firstChild.nodeValue = msgs[4];
 }
 
+function cmp_files(f1, f2) {
+    if (f1.name < f2.name)
+	return -1;
+    if (f1.name > f2.name)
+	return 1;
+    return 0;
+}
+
 var storage = navigator.getDeviceStorage('music');
 var cursor = storage.enumerate();
 cursor.onsuccess = function() {
@@ -25,6 +33,8 @@ cursor.onsuccess = function() {
 	files.push(file);
 	this.continue();
     } else {
+	set_msg('sort');
+	files.sort(cmp_files);
 	set_msg('done.');
 	curidx = 0;
 	play_cur();
