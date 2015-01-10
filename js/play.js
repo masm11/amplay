@@ -89,17 +89,6 @@ set_msg('r5');
 
 radio.addEventListener('antennaavailablechange', play_or_stop);
 
-/*
-function a(obj)
-{
-    set_msg('a: ' + obj);
-}
-
-// navigator.mozSetMessageHandler('bluetooth-pairedstatuschanged', a);
-// navigator.mozSetMessageHandler('headset-button', a);
-// navigator.mozSetMessageHandler('notification', a);
-*/
-
 function play_on_click(id) {
     var mid = id;
     return function() {
@@ -212,51 +201,6 @@ function make_select_screen() {
 }
 
 window.onload = function() {
-    set_msg('a2dp set 1');
-    var bt = window.navigator.mozBluetooth;
-    set_msg('a2dp set 2 ' + bt);
-    var r = bt.getDefaultAdapter();
-    set_msg('a2dp set 3');
-    r.onsuccess = function() {
-	set_msg('a2dp. success.1');
-	// 反応する時としない時がある。条件不明。
-	this.result.addEventListener('a2dpstatuschanged', function(ev) {
-	    set_msg('a2dp: ' + ev.address + ', ' + ev.status);
-	    if (ev.status) {
-		play();
-	    } else {
-		pause();
-	    }
-	    return true;
-	});
-	this.result.addEventListener('devicefound', function(o) {
-	    set_msg('dev found: ' + o);
-	    return true;
-	});
-	this.result.addEventListener('hfpstatuschanged', function(o) {
-	    set_msg('hfp: ' + o);
-	    return true;
-	});
-	this.result.addEventListener('pairedstatuschanged', function(o) {
-	    set_msg('pair: ' + o);
-	    return true;
-	});
-	this.result.addEventListener('requestmediaplaystatus', function(o) {
-	    set_msg('media: ' + o);
-	    return true;
-	});
-	this.result.addEventListener('scostatuschanged', function(o) {
-	    set_msg('sco: ' + o);
-	    return true;
-	});
-	set_msg('a2dp. success.4');
-    };
-    set_msg('a2dp set 4');
-    r.onerror = function() {
-	set_msg('a2dp. error');
-    };
-    set_msg('a2dp set 5');
-
     set_msg('onload4');
     var sel = document.getElementById('select')
     set_msg('onload5');
