@@ -126,10 +126,6 @@ function play_on_click(id) {
 
 function make_select_screen_iter(ul, prefix, idx)
 {
-/*
-    "/sdcard/Music/foo/bar.ogg"
-    "/sdcard/Music/foo/baz.ogg"
-*/
     set_msg('make_select_screen_iter: 0');
     while (idx < files.length) {
 	set_msg('make_select_screen_iter: idx=' + idx);
@@ -178,19 +174,6 @@ function make_select_screen() {
     set_msg('make_select_screen: start.');
     var ul = document.getElementsByTagName("ul")[0];
     make_select_screen_iter(ul, '/', 0);
-/*
-    for (var i = 0; i < files.length; i++) {
-	var li = document.createElement("li");
-	ul.appendChild(li);
-	
-	var a = document.createElement("a");
-	li.appendChild(a);
-	
-	var txt = document.createTextNode(files[i].name);
-	a.appendChild(txt);
-	a.addEventListener('click', play_on_click(i));
-    }
-*/
     set_msg('make_select_screen: done.');
 }
 
