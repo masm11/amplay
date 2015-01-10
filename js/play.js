@@ -118,8 +118,67 @@ function play_on_click(id) {
     }
 }
 
+/*
+ * ul: <ul>ノード
+ * prefix: /.../ の文字列
+ * idx: files[idx]
+ */
+
+function make_select_screen_iter(ul, prefix, idx)
+{
+/*
+    "/sdcard/Music/foo/bar.ogg"
+    "/sdcard/Music/foo/baz.ogg"
+*/
+    set_msg('make_select_screen_iter: 0');
+    while (idx < files.length) {
+	set_msg('make_select_screen_iter: idx=' + idx);
+	
+	if (files[idx].name.lastIndexOf(prefix, 0) != 0)	// if startsWith(prefix)
+	    return idx;
+	set_msg('make_select_screen_iter: prefix matches.');
+	
+	var slash = files[idx].name.indexOf('/', prefix.length);
+	set_msg('make_select_screen_iter: slash=' + slash);
+	if (slash == -1) {
+	    // これ以上 '/' がない。
+	    set_msg('make_select_screen_iter: 1');
+	    
+	    var li = document.createElement("li");
+	    ul.appendChild(li);
+	    
+	    var a = document.createElement("a");
+	    li.appendChild(a);
+	    
+	    var txt = document.createTextNode(files[idx].name.substring(prefix.length));
+	    a.appendChild(txt);
+	    a.addEventListener('click', play_on_click(idx));
+	    idx++;
+	    set_msg('make_select_screen_iter: 2');
+	} else {
+	    // '/' を発見。
+	    set_msg('make_select_screen_iter: 3');
+	    
+	    var li = document.createElement("li");
+	    ul.appendChild(li);
+	    
+	    var txt = document.createTextNode(files[idx].name.substring(0, slash + 1));
+	    li.appendChild(txt);
+	    
+	    var new_ul = document.createElement("ul");
+	    ul.appendChild(new_ul);
+	    idx = make_select_screen_iter(new_ul, files[idx].name.substring(0, slash + 1), idx);
+	    set_msg('make_select_screen_iter: 4');
+	}
+	set_msg('make_select_screen_iter: 5');
+    }
+}
+
 function make_select_screen() {
+    set_msg('make_select_screen: start.');
     var ul = document.getElementsByTagName("ul")[0];
+    make_select_screen_iter(ul, '/', 0);
+/*
     for (var i = 0; i < files.length; i++) {
 	var li = document.createElement("li");
 	ul.appendChild(li);
@@ -131,6 +190,7 @@ function make_select_screen() {
 	a.appendChild(txt);
 	a.addEventListener('click', play_on_click(i));
     }
+*/
     set_msg('make_select_screen: done.');
 }
 
