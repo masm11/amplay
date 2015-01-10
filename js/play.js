@@ -155,15 +155,17 @@ function make_select_screen_iter(ul, prefix, idx)
 	    // '/' を発見。
 	    set_msg('make_select_screen_iter: 3');
 	    
+	    var new_pfx = files[idx].name.substring(0, slash + 1);
+	    
 	    var li = document.createElement("li");
 	    ul.appendChild(li);
 	    
-	    var txt = document.createTextNode(files[idx].name.substring(0, slash + 1));
+	    var txt = document.createTextNode(files[idx].name.slice(prefix.length, new_pfx.length - 1));
 	    li.appendChild(txt);
 	    
 	    var new_ul = document.createElement("ul");
 	    ul.appendChild(new_ul);
-	    idx = make_select_screen_iter(new_ul, files[idx].name.substring(0, slash + 1), idx);
+	    idx = make_select_screen_iter(new_ul, new_pfx, idx);
 	    set_msg('make_select_screen_iter: 4');
 	}
 	set_msg('make_select_screen_iter: 5');
@@ -173,7 +175,7 @@ function make_select_screen_iter(ul, prefix, idx)
 function make_select_screen() {
     set_msg('make_select_screen: start.');
     var ul = document.getElementsByTagName("ul")[0];
-    make_select_screen_iter(ul, '/', 0);
+    make_select_screen_iter(ul, '/sdcard/Music/', 0);
     set_msg('make_select_screen: done.');
 }
 
