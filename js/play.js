@@ -36,13 +36,24 @@ cursor.onsuccess = function() {
 	set_msg('sort');
 	files.sort(cmp_files);
 	set_msg('done.');
-	curidx = 0;
 	play_cur();
     }
 }
 cursor.onerror = function() {
     document.write('error.');
 }
+
+function save_cur() {
+    localStorage.setItem('curidx', '' + curidx);
+}
+
+function restore_cur() {
+    var idx = localStorage.getItem('curidx');
+    if (idx)
+	curidx = idx * 1;	// "*1": 数値に変換
+}
+
+restore_cur();
 
 function play() {
     var audio = document.getElementById('audio');
@@ -56,6 +67,8 @@ function play_cur() {
     set_msg('' + audio.src);
     audio.play();
     audio.addEventListener('ended', play_next);
+    
+    save_cur();
 }
 
 function play_prev() {
