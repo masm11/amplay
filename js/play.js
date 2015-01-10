@@ -145,10 +145,23 @@ function make_select_screen_iter(ul, prefix, idx)
 	    
 	    var a = document.createElement("a");
 	    li.appendChild(a);
-	    
-	    var txt = document.createTextNode(files[idx].name.substring(prefix.length));
-	    a.appendChild(txt);
 	    a.addEventListener('click', play_on_click(idx));
+	    
+	    var fname = document.createTextNode(files[idx].name.substring(prefix.length));
+	    a.appendChild(fname);
+	    
+	    var br1 = document.createElement("br");
+	    a.appendChild(br1);
+	    
+	    var title = document.createTextNode('title');
+	    a.appendChild(title);
+	    
+	    var br2 = document.createElement("br");
+	    a.appendChild(br2);
+	    
+	    var artist = document.createTextNode('artist');
+	    a.appendChild(artist);
+	    
 	    idx++;
 	    set_msg('make_select_screen_iter: 2');
 	} else {
