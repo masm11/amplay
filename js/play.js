@@ -58,6 +58,12 @@ function play_cur() {
     audio.addEventListener('ended', play_next);
 }
 
+function play_prev() {
+    if (--curidx < 0)
+	curidx = files.length - 1;
+    play_cur();
+}
+
 function play_next() {
     if (++curidx >= files.length)
 	curidx = 0;
@@ -201,9 +207,21 @@ function make_select_screen() {
 }
 
 window.onload = function() {
+    set_msg('onload0');
+    var sel = document.getElementById('prev')
+    set_msg('onload1');
+    sel.addEventListener('click', play_prev, false);
+    set_msg('onload2');
+    
+    set_msg('onload3');
+    var sel = document.getElementById('next')
     set_msg('onload4');
-    var sel = document.getElementById('select')
+    sel.addEventListener('click', play_next, false);
     set_msg('onload5');
-    sel.addEventListener('click', make_select_screen, false);
+    
     set_msg('onload6');
+    var sel = document.getElementById('select')
+    set_msg('onload7');
+    sel.addEventListener('click', make_select_screen, false);
+    set_msg('onload8');
 };
