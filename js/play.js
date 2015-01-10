@@ -120,12 +120,12 @@ function expand_or_coarse_on_click(div) {
 }
 
 /*
- * ul: <ul>ノード
+ * parent: <div>ノード or <ul> ノード
  * prefix: /.../ の文字列
  * idx: files[idx]
  */
 
-function make_select_screen_iter(ul, prefix, idx)
+function make_select_screen_iter(parent, prefix, idx)
 {
     set_msg('make_select_screen_iter: 0');
     while (idx < files.length) {
@@ -142,7 +142,7 @@ function make_select_screen_iter(ul, prefix, idx)
 	    set_msg('make_select_screen_iter: 1');
 	    
 	    var li = document.createElement("li");
-	    ul.appendChild(li);
+	    parent.appendChild(li);
 	    
 	    var a = document.createElement("a");
 	    li.appendChild(a);
@@ -171,19 +171,16 @@ function make_select_screen_iter(ul, prefix, idx)
 	    
 	    /* 以下のような感じに作る。
 	     * <li> <a onclick="expand_or_coarse_on_click('new_div')"> directory name </a>
-	     *   <ul>
-	     *     <div id="new_div" style="display: none">
-	     *     </div>
-	     *   </ul>
-	     *
-	     *
-	     *
+	     * <ul>
+	     *   <div id="new_div" style="display: none">
+	     *   </div>
+	     * </ul>
 	     */
 	    
 	    var new_pfx = files[idx].name.substring(0, slash + 1);
 	    
 	    var li = document.createElement("li");
-	    ul.appendChild(li);
+	    parent.appendChild(li);
 	    
 	    var a = document.createElement("a");
 	    li.appendChild(a);
@@ -192,7 +189,7 @@ function make_select_screen_iter(ul, prefix, idx)
 	    a.appendChild(txt);
 	    
 	    var new_ul = document.createElement("ul");
-	    ul.appendChild(new_ul);
+	    parent.appendChild(new_ul);
 	    
 	    var new_div = document.createElement("div");
 	    new_ul.appendChild(new_div);
