@@ -54,26 +54,6 @@ function play_next() {
     play_cur();
 }
 
-function play_this(e) {
-    set_msg('play_this');
-    curidx++;
-    
-    filelist = document.getElementById('file').files;
-    set_msg('' + filelist[0].name);
-    
-    for (var i = 0; i < files.length; i++) {
-	var fn = files[i].name.substring(files[i].name.lastIndexOf('/') + 1);
-	if (fn == filelist[0].name) {
-	    curidx = i;
-	    break;
-	}
-    }
-    
-    play_cur();
-    
-    e.preventDefault();
-}
-
 function pause() {
 set_msg('stop1');
     var audio = document.getElementById('audio');
@@ -237,12 +217,6 @@ window.onload = function() {
 	set_msg('a2dp. error');
     };
     set_msg('a2dp set 5');
-
-    set_msg('onload1');
-    pt = document.getElementById('play_this')
-    set_msg('onload2');
-    pt.addEventListener('click', play_this, false);
-    set_msg('onload3');
 
     set_msg('onload4');
     var sel = document.getElementById('select')
