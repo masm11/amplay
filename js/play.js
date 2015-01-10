@@ -169,6 +169,17 @@ function make_select_screen_iter(ul, prefix, idx)
 	    // '/' を発見。
 	    set_msg('make_select_screen_iter: 3');
 	    
+	    /* 以下のような感じに作る。
+	     * <li> <a onclick="expand_or_coarse_on_click('new_div')"> directory name </a>
+	     *   <ul>
+	     *     <div id="new_div" style="display: none">
+	     *     </div>
+	     *   </ul>
+	     *
+	     *
+	     *
+	     */
+	    
 	    var new_pfx = files[idx].name.substring(0, slash + 1);
 	    
 	    var li = document.createElement("li");
