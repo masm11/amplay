@@ -108,6 +108,17 @@ function play_on_click(id) {
     }
 }
 
+function expand_or_coarse_on_click(div) {
+    var this_div = div;
+    return function() {
+	if (this_div.style.display == 'none') {
+	    this_div.style.display = 'block';
+	} else {
+	    this_div.style.display = 'none';
+	}
+    }
+}
+
 /*
  * ul: <ul>ノード
  * prefix: /.../ の文字列
@@ -163,12 +174,22 @@ function make_select_screen_iter(ul, prefix, idx)
 	    var li = document.createElement("li");
 	    ul.appendChild(li);
 	    
+	    var a = document.createElement("a");
+	    li.appendChild(a);
+	    
 	    var txt = document.createTextNode(files[idx].name.slice(prefix.length, new_pfx.length - 1));
-	    li.appendChild(txt);
+	    a.appendChild(txt);
 	    
 	    var new_ul = document.createElement("ul");
 	    ul.appendChild(new_ul);
-	    idx = make_select_screen_iter(new_ul, new_pfx, idx);
+	    
+	    var new_div = document.createElement("div");
+	    new_ul.appendChild(new_div);
+	    new_div.style.display = 'none';
+	    a.addEventListener('click',
+			       expand_or_coarse_on_click(new_div));
+	    
+	    idx = make_select_screen_iter(new_div, new_pfx, idx);
 	    set_msg('make_select_screen_iter: 4');
 	}
 	set_msg('make_select_screen_iter: 5');
