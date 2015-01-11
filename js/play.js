@@ -20,20 +20,14 @@ function set_msg(str) {
 
 function set_scanning_msg() {
     if ((++count & 127) == 0) {
+	var msg = '';
 	switch (++count2 & 3) {
-	case 0:
-	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning.';
-	    break;
-	case 1:
-	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning..';
-	    break;
-	case 2:
-	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning...';
-	    break;
-	case 3:
-	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning....';
-	    break;
+	case 0:	msg = 'scanning.';	break;
+	case 1:	msg = 'scanning..';	break;
+	case 2:	msg = 'scanning...';	break;
+	case 3:	msg = 'scanning....';	break;
 	}
+	document.getElementById('scanmsg').firstChild.nodeValue = msg;
     }
 }
 
