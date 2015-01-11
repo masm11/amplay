@@ -1,5 +1,7 @@
 var files = [];
 var curidx = 0;
+var count = 0;
+var count2 = 0;
 
 var msgs = ['', '', '', '', ''];
 
@@ -16,6 +18,49 @@ function set_msg(str) {
     document.getElementById('msg5').firstChild.nodeValue = msgs[4];
 }
 
+function set_scanning_msg() {
+    if ((++count & 127) == 0) {
+	switch (++count2 & 3) {
+	case 0:
+	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning.';
+	    break;
+	case 1:
+	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning..';
+	    break;
+	case 2:
+	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning...';
+	    break;
+	case 3:
+	    document.getElementById('scanmsg').firstChild.nodeValue = 'scanning....';
+	    break;
+	}
+    }
+}
+
+function screen_step(step)
+{
+    var div0 = document.getElementById('scanning');
+    var div1 = document.getElementById('main');
+    var div2 = document.getElementById('list');
+    switch (step) {
+    case 0:
+	div0.style.display = 'block';
+	div1.style.display = 'none';
+	div2.style.display = 'none';
+	break;
+    case 1:
+	div0.style.display = 'none';
+	div1.style.display = 'block';
+	div2.style.display = 'none';
+	break;
+    case 2:
+	div0.style.display = 'none';
+	div1.style.display = 'none';
+	div2.style.display = 'block';
+	break;
+    }
+}
+
 function cmp_files(f1, f2) {
     if (f1.name < f2.name)
 	return -1;
@@ -29,14 +74,16 @@ var cursor = storage.enumerate();
 cursor.onsuccess = function() {
     if (this.result) {
 	var file = this.result;
-	// set_msg(file.name);
+	set_scanning_msg();
 	files.push(file);
 	this.continue();
     } else {
 	set_msg('sort');
 	files.sort(cmp_files);
 	set_msg('done.');
-	play_cur();
+//	play_cur();
+	
+	screen_step(1);
     }
 }
 cursor.onerror = function() {
@@ -113,6 +160,7 @@ function play_on_click(id) {
     return function() {
 	curidx = mid;
 	play_cur();
+	screen_step(1);
     }
 }
 
@@ -216,6 +264,7 @@ function make_select_screen() {
     set_msg('make_select_screen: start.');
     var ul = document.getElementsByTagName("ul")[0];
     make_select_screen_iter(ul, '/sdcard/Music/', 0);
+    screen_step(2);
     set_msg('make_select_screen: done.');
 }
 
