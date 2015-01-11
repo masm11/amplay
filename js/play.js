@@ -18,6 +18,8 @@ function set_msg(str) {
     document.getElementById('msg5').firstChild.nodeValue = msgs[4];
 }
 
+/* scanning... を適度に表示。
+ */
 function set_scanning_msg() {
     if ((++count & 127) == 0) {
 	var msg = '';
@@ -31,6 +33,8 @@ function set_scanning_msg() {
     }
 }
 
+/* 場面に応じた画面を表示する。
+ */
 function screen_step(step)
 {
     var div0 = document.getElementById('scanning');
