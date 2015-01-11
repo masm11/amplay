@@ -85,7 +85,7 @@ cursor.onsuccess = function() {
     }
 }
 cursor.onerror = function() {
-    document.write('error.');
+    document.write('enumerate error.');
 }
 
 /* curidx を local storage に保存。
@@ -170,7 +170,8 @@ set_msg('r5');
 radio.addEventListener('antennaavailablechange', play_or_stop);
 
 /* 曲リストからファイルを選択すると、再生開始して
- * 画面を main に戻す。
+ * 画面を main に戻す。…ような関数を返す。
+ * closure を使ってるので、ちょっと解りにくい。
  */
 function play_on_click(id) {
     var mid = id;
@@ -200,7 +201,6 @@ function expand_or_coarse_on_click(div) {
  * prefix: /.../ の文字列
  * idx: files[idx]
  */
-
 function make_select_screen_iter(parent, prefix, idx)
 {
     set_msg('make_select_screen_iter: 0');
