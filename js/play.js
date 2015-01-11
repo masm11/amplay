@@ -84,10 +84,14 @@ cursor.onerror = function() {
     document.write('error.');
 }
 
+/* curidx を local storage に保存。
+ */
 function save_cur() {
     localStorage.setItem('curidx', '' + curidx);
 }
 
+/* curidx を local storage から読み出す。
+ */
 function restore_cur() {
     var idx = localStorage.getItem('curidx');
     if (idx)
@@ -96,11 +100,15 @@ function restore_cur() {
 
 restore_cur();
 
+/* そのまま再生。
+ */
 function play() {
     var audio = document.getElementById('audio');
     audio.play();
 }
 
+/* curidx で示される曲を最初から再生。
+ */
 function play_cur() {
     var audio = document.getElementById('audio');
     set_msg('' + audio);
@@ -112,18 +120,24 @@ function play_cur() {
     save_cur();
 }
 
+/* 前の曲を再生。
+ */
 function play_prev() {
     if (--curidx < 0)
 	curidx = files.length - 1;
     play_cur();
 }
 
+/* 次の曲を再生。
+ */
 function play_next() {
     if (++curidx >= files.length)
 	curidx = 0;
     play_cur();
 }
 
+/* 一時停止
+ */
 function pause() {
 set_msg('stop1');
     var audio = document.getElementById('audio');
@@ -134,6 +148,8 @@ set_msg('stop3');
 
 var radio = navigator.mozFMRadio;
 
+/* イヤホン挿抜で再生/停止。
+ */
 function play_or_stop() {
 set_msg('r1');
     if (radio.antennaAvailable) {
@@ -149,6 +165,9 @@ set_msg('r5');
 
 radio.addEventListener('antennaavailablechange', play_or_stop);
 
+/* 曲リストからファイルを選択すると、再生開始して
+ * 画面を main に戻す。
+ */
 function play_on_click(id) {
     var mid = id;
     return function() {
@@ -158,6 +177,9 @@ function play_on_click(id) {
     }
 }
 
+/* 曲リストからディレクトリを選択すると、
+ * そのディレクトリを展開/省略する。
+ */
 function expand_or_coarse_on_click(div) {
     var this_div = div;
     return function() {
@@ -254,6 +276,8 @@ function make_select_screen_iter(parent, prefix, idx)
     }
 }
 
+/* 曲選択画面を作る。
+ */
 function make_select_screen() {
     set_msg('make_select_screen: start.');
     var ul = document.getElementsByTagName("ul")[0];
