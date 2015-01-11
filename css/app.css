@@ -16,3 +16,6 @@ p {
   font-size: inherit;
 }
 
+div.debug {
+  font-size: 0.7rem;
+}
