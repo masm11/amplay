@@ -6,6 +6,7 @@ var count2 = 0;
 var msgs = ['', '', '', '', ''];
 
 function set_msg(str) {
+/*
     msgs[0] = msgs[1];
     msgs[1] = msgs[2];
     msgs[2] = msgs[3];
@@ -16,6 +17,7 @@ function set_msg(str) {
     document.getElementById('msg3').firstChild.nodeValue = msgs[2];
     document.getElementById('msg4').firstChild.nodeValue = msgs[3];
     document.getElementById('msg5').firstChild.nodeValue = msgs[4];
+*/
 }
 
 /* scanning... を適度に表示。
