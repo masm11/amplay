@@ -70,28 +70,6 @@ function cmp_files(f1, f2) {
 }
 
 var storage = navigator.getDeviceStorage('music');
-var cursor = storage.enumerate();
-cursor.onsuccess = function() {
-    if (this.result) {
-	var file = this.result;
-	set_scanning_msg();
-	files.push(file);
-	this.continue();
-    } else {
-	set_msg('sort');
-	files.sort(cmp_files);
-	set_msg('done.');
-	
-	// audio の src をセット
-	play_cur();
-	pause();
-	
-	screen_step(1);
-    }
-}
-cursor.onerror = function() {
-    document.write('enumerate error.');
-}
 
 /* curidx を local storage に保存。
  */
@@ -119,6 +97,17 @@ function play() {
 /* curidx で示される曲を最初から再生。
  */
 function play_cur() {
+    if (files.length <= 0) {
+	set_msg('No audio files.');
+	alert('No audio files.');
+	return;
+    }
+    
+    if (curidx < 0 || curidx >= files.length) {
+	set_msg('No such idx.' + curidx);
+	curidx = 0;
+    }
+    
     var audio = document.getElementById('audio');
     set_msg('' + audio);
     audio.src = window.URL.createObjectURL(files[curidx]);
@@ -341,4 +330,33 @@ window.onload = function() {
     set_msg('onload10');
     sel.addEventListener('click', cancel_select_screen, false);
     set_msg('onload11');
+    
+    if (storage) {
+	var cursor = storage.enumerate();
+	cursor.onsuccess = function() {
+	    if (this.result) {
+		var file = this.result;
+		set_scanning_msg();
+		files.push(file);
+		this.continue();
+	    } else {
+		set_msg('sort');
+		files.sort(cmp_files);
+		set_msg('done.');
+		
+		// audio の src をセット
+		play_cur();
+		pause();
+		
+		screen_step(1);
+	    }
+	}
+	cursor.onerror = function() {
+	    set_msg('enumerate error.');
+	    alert('enumerate error.');
+	}
+    } else {
+	set_msg('No music storage.');
+	alert('No music storage.');
+    }
 };
