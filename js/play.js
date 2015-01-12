@@ -284,8 +284,22 @@ function make_select_screen_iter(parent, prefix, idx)
  */
 function make_select_screen() {
     set_msg('make_select_screen: start.');
-    var ul = document.getElementsByTagName("ul")[0];
+    set_msg('make_select_screen: 0.');
+    
+    // 削除
+    var list = document.getElementById('list');
+    set_msg('make_select_screen: 1.');
+    var ul = list.getElementsByTagName('ul');
+    set_msg('make_select_screen: 2.');
+    if (ul && ul[0])
+	list.removeChild(ul[0]);
+    set_msg('make_select_screen: 3.');
+    
+    // 作成
+    ul = document.createElement("ul");
     make_select_screen_iter(ul, '/sdcard/Music/', 0);
+    document.getElementById("list").appendChild(ul);
+    
     screen_step(2);
     set_msg('make_select_screen: done.');
 }
