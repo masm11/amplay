@@ -81,7 +81,10 @@ cursor.onsuccess = function() {
 	set_msg('sort');
 	files.sort(cmp_files);
 	set_msg('done.');
-//	play_cur();
+	
+	// audio の src をセット
+	play_cur();
+	pause();
 	
 	screen_step(1);
     }
