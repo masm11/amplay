@@ -290,6 +290,14 @@ function make_select_screen() {
     set_msg('make_select_screen: done.');
 }
 
+/* 曲選択画面から戻る。
+ */
+function cancel_select_screen() {
+    set_msg('cancel_select_screen: start.');
+    screen_step(1);
+    set_msg('cancel_select_screen: done.');
+}
+
 window.onload = function() {
     set_msg('onload0');
     var sel = document.getElementById('prev')
@@ -308,4 +316,10 @@ window.onload = function() {
     set_msg('onload7');
     sel.addEventListener('click', make_select_screen, false);
     set_msg('onload8');
+    
+    set_msg('onload9');
+    var sel = document.getElementById('select_cancel')
+    set_msg('onload10');
+    sel.addEventListener('click', cancel_select_screen, false);
+    set_msg('onload11');
 };
