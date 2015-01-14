@@ -3,10 +3,11 @@ var curidx = 0;
 var count = 0;
 var count2 = 0;
 
+var playing = false;
+
 var msgs = ['', '', '', '', ''];
 
 function set_msg(str) {
-/*
     msgs[0] = msgs[1];
     msgs[1] = msgs[2];
     msgs[2] = msgs[3];
@@ -17,7 +18,6 @@ function set_msg(str) {
     document.getElementById('msg3').firstChild.nodeValue = msgs[2];
     document.getElementById('msg4').firstChild.nodeValue = msgs[3];
     document.getElementById('msg5').firstChild.nodeValue = msgs[4];
-*/
 }
 
 /* scanning... を適度に表示。
@@ -92,6 +92,7 @@ restore_cur();
 function play() {
     var audio = document.getElementById('audio');
     audio.play();
+    playing = true;
 }
 
 /* curidx で示される曲を最初から再生。
@@ -113,6 +114,7 @@ function play_cur() {
     audio.src = window.URL.createObjectURL(files[curidx]);
     set_msg('' + audio.src);
     audio.play();
+    playing = true;
     audio.addEventListener('ended', play_next);
     
     save_cur();
@@ -134,6 +136,26 @@ function play_next() {
     play_cur();
 }
 
+function mrc_play() {
+    set_msg('mrc play');
+}
+
+function mrc_pause() {
+    set_msg('mrc pause');
+}
+
+function mrc_playpause() {
+    set_msg('mrc playpause');
+}
+
+function mrc_updateplaystatus(e) {
+    set_msg('mrc updateplaystatus: ' + e.detail['command']);
+    if (playing)
+	pause();
+    else
+	play();
+}
+
 /* 一時停止
  */
 function pause() {
@@ -141,6 +163,7 @@ set_msg('stop1');
     var audio = document.getElementById('audio');
 set_msg('stop2');
     audio.pause();
+    playing = false;
 set_msg('stop3');
 }
 
@@ -331,6 +354,15 @@ window.onload = function() {
     sel.addEventListener('click', cancel_select_screen, false);
     set_msg('onload11');
     
+    var mrc = new MediaRemoteControls();
+    set_msg('onload12');
+    mrc.addCommandListener('play', mrc_play);
+    mrc.addCommandListener('pause', mrc_pause);
+    mrc.addCommandListener('playpause', mrc_playpause);
+    mrc.addCommandListener('updateplaystatus', mrc_updateplaystatus);
+    mrc.start();
+    set_msg('onload13');
+
     if (storage) {
 	var cursor = storage.enumerate();
 	cursor.onsuccess = function() {
