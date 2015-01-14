@@ -156,6 +156,12 @@ function mrc_updateplaystatus(e) {
 	play();
 }
 
+function mrc_updatemetadata(e) {
+    set_msg('mrc updatemetadata: ' + e.detail['command']);
+    if (playing)
+	pause();
+}
+
 /* 一時停止
  */
 function pause() {
@@ -360,6 +366,7 @@ window.onload = function() {
     mrc.addCommandListener('pause', mrc_pause);
     mrc.addCommandListener('playpause', mrc_playpause);
     mrc.addCommandListener('updateplaystatus', mrc_updateplaystatus);
+    mrc.addCommandListener('updatemetadata', mrc_updatemetadata);
     mrc.start();
     set_msg('onload13');
 

@@ -189,9 +189,14 @@ MediaRemoteControls.prototype._setupBluetooth = function(callback) {
   // A2DP is disconnected: pause the player like the headphone is unplugged.
   function a2dpConnectionHandler(event) {
     set_msg('_setupBluetooth: 3');
+/* masm
     var isConnected = event.status;
     if (isConnected && self._commandListeners['updatemetadata'].length > 0)
       self._commandHandler(REMOTE_CONTROLS.UPDATE_METADATA);
+*/
+    if (self._commandListeners['updatemetadata'].length > 0)
+      self._commandHandler(REMOTE_CONTROLS.UPDATE_METADATA);
+      
   }
 
   // Also expose the SCO status with the custom event because the SCO connection
