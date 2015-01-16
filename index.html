@@ -15,6 +15,7 @@
         -->
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="css/app.css">
+        <link rel="stylesheet" href="font-awesome-4.2.0/css/font-awesome.min.css">
 
         <!--
         Inline JavaScript code is not allowed for privileged and certified apps,
@@ -51,9 +52,6 @@
 	  
 	  <div id="main" style="display: none">
 	    <audio id="audio" mozaudiochannel="content" controls></audio>
-	    <p><a id="prev">前の曲へ</a></p>
-	    <p><a id="next">次の曲へ</a></p>
-	    <p><a id="select">曲を選択</a></p>
 	  </div>
 	  
 	  <div id="list" style="display: none">
@@ -69,11 +67,11 @@
 	  </div>
 
 	  <div class="control" id="footer">
-	    <div class="celem"> <a>Prev</a> </div>
-	    <div class="celem"> <a>Play</a> </div>
-	    <div class="celem"> <a>Pause</a> </div>
-	    <div class="celem"> <a>Next</a> </div>
-	    <div class="celem"> <a>Sel</a> </div>
+	    <div class="celem"><a id="prev"><i class="fa fa-step-backward"></i></a></div>
+	    <div class="celem"><a id="play"><i class="fa fa-play"></i></a> </div>
+	    <div class="celem"><a id="pause"><i class="fa fa-pause"></i></a> </div>
+	    <div class="celem"><a id="next"><i class="fa fa-step-forward"></i></a> </div>
+	    <div class="celem"><a id="select"><i class="fa fa-eject"></i></a> </div>
 	  </div>
         </section>
     </body>

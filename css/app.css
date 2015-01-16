@@ -34,5 +34,6 @@ div.celem {
     width: 20%;
     float: left;
     display: block;
-    background-color: #808080
+    /* background-color: #808080; */
+    text-align: center;
 }

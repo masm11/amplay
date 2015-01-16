@@ -342,6 +342,18 @@ window.onload = function() {
     sel.addEventListener('click', play_prev, false);
     set_msg('onload2');
     
+    set_msg('onload0');
+    var sel = document.getElementById('play')
+    set_msg('onload1');
+    sel.addEventListener('click', play, false);
+    set_msg('onload2');
+    
+    set_msg('onload0');
+    var sel = document.getElementById('pause')
+    set_msg('onload1');
+    sel.addEventListener('click', pause, false);
+    set_msg('onload2');
+    
     set_msg('onload3');
     var sel = document.getElementById('next')
     set_msg('onload4');
