@@ -1,7 +1,5 @@
 var files = [];
 var curidx = 0;
-var count = 0;
-var count2 = 0;
 
 var playing = false;
 
@@ -18,21 +16,6 @@ function set_msg(str) {
     document.getElementById('msg3').firstChild.nodeValue = msgs[2];
     document.getElementById('msg4').firstChild.nodeValue = msgs[3];
     document.getElementById('msg5').firstChild.nodeValue = msgs[4];
-}
-
-/* scanning... を適度に表示。
- */
-function set_scanning_msg() {
-    if ((++count & 127) == 0) {
-	var msg = '';
-	switch (++count2 & 3) {
-	case 0:	msg = 'scanning.';	break;
-	case 1:	msg = 'scanning..';	break;
-	case 2:	msg = 'scanning...';	break;
-	case 3:	msg = 'scanning....';	break;
-	}
-	document.getElementById('scanmsg').firstChild.nodeValue = msg;
-    }
 }
 
 /* 場面に応じた画面を表示する。
@@ -391,7 +374,6 @@ window.onload = function() {
 	cursor.onsuccess = function() {
 	    if (this.result) {
 		var file = this.result;
-		set_scanning_msg();
 		files.push(file);
 		this.continue();
 	    } else {
