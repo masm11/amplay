@@ -42,21 +42,25 @@ function screen_step(step)
     var div0 = document.getElementById('scanning');
     var div1 = document.getElementById('main');
     var div2 = document.getElementById('list');
+    var div3 = document.getElementById('control');
     switch (step) {
     case 0:
 	div0.style.display = 'block';
 	div1.style.display = 'none';
 	div2.style.display = 'none';
+	div3.style.display = 'none';
 	break;
     case 1:
 	div0.style.display = 'none';
 	div1.style.display = 'block';
 	div2.style.display = 'none';
+	div3.style.display = 'block';
 	break;
     case 2:
 	div0.style.display = 'none';
 	div1.style.display = 'none';
 	div2.style.display = 'block';
+	div3.style.display = 'block';
 	break;
     }
 }
