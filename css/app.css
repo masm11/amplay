@@ -19,3 +19,20 @@ p {
 div.debug {
   font-size: 0.7rem;
 }
+
+div.control {
+    width: 100%;
+    display: box;
+    box-pack: justify;
+    -moz-box-pack: justify;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0px;
+}
+
+div.celem {
+    width: 20%;
+    float: left;
+    display: block;
+    background-color: #808080
+}
