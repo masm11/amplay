@@ -33,7 +33,7 @@ div.control {
     -moz-box-pack: justify;
     overflow: hidden;
     position: fixed;
-    bottom: 0px;
+    bottom: 5px;
     left: 0px;
 }
 
