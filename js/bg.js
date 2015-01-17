@@ -2,17 +2,13 @@ var canvas;
 var gl;
 
 function bg_init() {
+/*
     canvas = document.createElement('canvas');
     canvas.setAttribute('width', 720);
     canvas.setAttribute('height', 1280);
-/*
-    var ctx = canvas.getContext('2d');
-    alert('test2: ' + ctx);
-    ctx.fillStyle = '#c00000';
-    ctx.fillRect(10, 10, 55, 50);
-    alert('test3');
-*/
     document.mozSetImageElement('canvasbg', canvas);
+*/
+    canvas = document.getElementById('test');
     
     start();
 }
@@ -284,8 +280,6 @@ function initTextures() {
   cubeTexture = gl.createTexture();
   cubeImage = new Image();
   cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
-// masm
-//  cubeImage.src = "cubetexture.png";
   cubeImage.src = "img/icons/icon512x512.png";
 }
 
@@ -326,8 +320,8 @@ function drawScene() {
   // drawing the cube.
   
   // masm
-  // mvTranslate([0.0, 0.0, -6.0]);
-  mvTranslate([0.0, 0.0, -50.0]);
+  mvTranslate([0.0, 0.0, -6.0]);
+  // mvTranslate([0.0, 0.0, -50.0]);
   
   // Save the current matrix, then rotate before we draw.
   
