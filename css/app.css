@@ -5,7 +5,11 @@ html, body {
 
 body {
   font-size: 1.4rem;
-  background: #fee;
+  /* background: #fee; */
+}
+
+#body {
+  background-image: -moz-element(#canvasbg);
 }
 
 h1 {
