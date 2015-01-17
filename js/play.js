@@ -386,6 +386,7 @@ window.onload = function() {
 		pause();
 		
 		screen_step(1);
+		bg_init();
 	    }
 	}
 	cursor.onerror = function() {
@@ -396,6 +397,4 @@ window.onload = function() {
 	set_msg('No music storage.');
 	alert('No music storage.');
     }
-
-    bg_init();
 };
