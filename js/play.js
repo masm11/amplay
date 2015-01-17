@@ -1,5 +1,6 @@
 var files = [];
 var curidx = 0;
+var audio;
 
 var playing = false;
 
@@ -77,7 +78,6 @@ restore_cur();
 /* そのまま再生。
  */
 function play() {
-    var audio = document.getElementById('audio');
     audio.play();
     playing = true;
 }
@@ -96,7 +96,6 @@ function play_cur() {
 	curidx = 0;
     }
     
-    var audio = document.getElementById('audio');
     set_msg('' + audio);
     audio.src = window.URL.createObjectURL(files[curidx]);
     set_msg('' + audio.src);
@@ -109,7 +108,6 @@ function play_cur() {
 
 function play_seek() {
     set_msg('play_seek: 0');
-    var audio = document.getElementById('audio');
     
     set_msg('play_seek: 1: ' + this.value);
     audio.currentTime = this.value;
@@ -161,7 +159,6 @@ function mrc_updatemetadata(e) {
  */
 function pause() {
 set_msg('stop1');
-    var audio = document.getElementById('audio');
 set_msg('stop2');
     audio.pause();
     playing = false;
@@ -337,7 +334,8 @@ window.onload = function() {
     seekbar.addEventListener('change', play_seek, false);
     set_msg('onload2');
 
-    var audio = document.getElementById('audio');
+    audio = new Audio();
+    audio.mozAudioChannelType = 'content';
     audio.addEventListener('timeupdate', function() {
 	seekbar.value = audio.currentTime;
     });
