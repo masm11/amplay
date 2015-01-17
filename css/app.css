@@ -42,3 +42,9 @@ div.celem {
     /* background-color: #808080; */
     text-align: center;
 }
+
+#seekbar {
+    width: 97%;
+    left: 0px;
+    display: block;
+}

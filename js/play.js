@@ -107,6 +107,14 @@ function play_cur() {
     save_cur();
 }
 
+function play_seek() {
+    set_msg('play_seek: 0');
+    var audio = document.getElementById('audio');
+    
+    set_msg('play_seek: 1: ' + this.value);
+    audio.currentTime = this.value;
+}
+
 /* 前の曲を再生。
  */
 function play_prev() {
@@ -323,6 +331,20 @@ function cancel_select_screen() {
 }
 
 window.onload = function() {
+    set_msg('onload0');
+    var seekbar = document.getElementById('seekbar');
+    set_msg('onload1');
+    seekbar.addEventListener('change', play_seek, false);
+    set_msg('onload2');
+
+    var audio = document.getElementById('audio');
+    audio.addEventListener('timeupdate', function() {
+	seekbar.value = audio.currentTime;
+    });
+    audio.addEventListener('loadedmetadata', function() {
+	seekbar.max = audio.duration;
+    });
+    
     set_msg('onload0');
     var sel = document.getElementById('prev')
     set_msg('onload1');
