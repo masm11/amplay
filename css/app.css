@@ -57,3 +57,7 @@ div.celem {
     font-size: 1rem;
     color: #808080;
 }
+
+#time {
+    float: right;
+}

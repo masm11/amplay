@@ -394,6 +394,25 @@ window.onload = function() {
     audio.mozAudioChannelType = 'content';
     audio.addEventListener('timeupdate', function() {
 	seekbar.value = audio.currentTime;
+	var max = audio.duration;
+	var cur = audio.currentTime;
+	if (isNaN(max))
+	    max = 0;
+	if (isNaN(cur))
+	    cur = 0;
+	max = Math.floor(max);
+	cur = Math.floor(cur);
+	var maxmin = Math.floor(max / 60);
+	var maxsec = max % 60;
+	var maxsec10 = Math.floor(maxsec / 10);
+	var maxsec01 = maxsec % 10;
+	var curmin = Math.floor(cur / 60);
+	var cursec = cur % 60;
+	var cursec10 = Math.floor(cursec / 10);
+	var cursec01 = cursec % 10;
+	document.getElementById('time').firstChild.nodeValue =
+	    '' + curmin + ':' + cursec10 + cursec01 +
+	    '/' + maxmin + ':' + maxsec10 + maxsec01;
     });
     audio.addEventListener('loadedmetadata', function() {
 	seekbar.max = audio.duration;
