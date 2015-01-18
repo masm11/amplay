@@ -236,8 +236,11 @@ var fnames = [];
 var idx = 0;
 
 function make_select_screen_iter_file() {
-    if (idx >= parents.length)
+    if (idx >= parents.length) {
+	document.getElementById('eject').style.display = 'block';
+	document.getElementById('spinner').style.display = 'none';
 	return;
+    }
     
     var li = document.createElement("li");
     parents[idx].appendChild(li);
@@ -362,10 +365,14 @@ function make_select_screen() {
     make_select_screen_iter(ul, '/sdcard/Music/', 0);
     document.getElementById("list").appendChild(ul);
     
-    screen_step(2);
+//    screen_step(2);
     
     make_select_screen_iter_file();
     set_msg('make_select_screen: done.');
+}
+
+function select_screen() {
+    screen_step(2);
 }
 
 /* 曲選択画面から戻る。
@@ -425,7 +432,7 @@ window.onload = function() {
     set_msg('onload6');
     var sel = document.getElementById('select')
     set_msg('onload7');
-    sel.addEventListener('click', make_select_screen, false);
+    sel.addEventListener('click', select_screen, false);
     set_msg('onload8');
     
     set_msg('onload9');
@@ -461,6 +468,8 @@ window.onload = function() {
 		pause();
 		
 		screen_step(1);
+
+		make_select_screen();
 	    }
 	}
 	cursor.onerror = function() {
