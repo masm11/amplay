@@ -215,6 +215,18 @@ function expand_or_coarse_on_click(div) {
     }
 }
 
+function got_metadata(audio, title_node, artist_node)
+{
+    var a = audio;
+    var title = title_node;
+    var artist = artist_node;
+    return function() {
+	var meta = a.mozGetMetadata();
+	title.nodeValue = (meta.TITLE || '不明なタイトル');
+	artist.nodeValue = (meta.ARTIST || '不明なアーティスト');
+    }
+}
+
 /*
  * parent: <div>ノード or <ul> ノード
  * prefix: /.../ の文字列
@@ -222,19 +234,13 @@ function expand_or_coarse_on_click(div) {
  */
 function make_select_screen_iter(parent, prefix, idx)
 {
-    set_msg('make_select_screen_iter: 0');
     while (idx < files.length) {
-	set_msg('make_select_screen_iter: idx=' + idx);
-	
 	if (files[idx].name.lastIndexOf(prefix, 0) != 0)	// if startsWith(prefix)
 	    return idx;
-	set_msg('make_select_screen_iter: prefix matches.');
 	
 	var slash = files[idx].name.indexOf('/', prefix.length);
-	set_msg('make_select_screen_iter: slash=' + slash);
 	if (slash == -1) {
 	    // これ以上 '/' がない。
-	    set_msg('make_select_screen_iter: 1');
 	    
 	    var li = document.createElement("li");
 	    parent.appendChild(li);
@@ -243,8 +249,11 @@ function make_select_screen_iter(parent, prefix, idx)
 	    li.appendChild(a);
 	    a.addEventListener('click', play_on_click(idx));
 	    
+	    var fname_span = document.createElement('span');
+	    fname_span.style.fontSize = '1rem';
+	    a.appendChild(fname_span);
 	    var fname = document.createTextNode(files[idx].name.substring(prefix.length));
-	    a.appendChild(fname);
+	    fname_span.appendChild(fname);
 	    
 	    var br1 = document.createElement("br");
 	    a.appendChild(br1);
@@ -255,14 +264,19 @@ function make_select_screen_iter(parent, prefix, idx)
 	    var br2 = document.createElement("br");
 	    a.appendChild(br2);
 	    
+	    var artist_span = document.createElement('span');
+	    artist_span.style.fontSize = '1rem';
+	    artist_span.style.color = '#808080';
+	    a.appendChild(artist_span);
 	    var artist = document.createTextNode('artist');
-	    a.appendChild(artist);
+	    artist_span.appendChild(artist);
+	    
+	    var tempaudio = new Audio(window.URL.createObjectURL(files[idx]));
+	    tempaudio.addEventListener('loadedmetadata', got_metadata(tempaudio, title, artist));
 	    
 	    idx++;
-	    set_msg('make_select_screen_iter: 2');
 	} else {
 	    // '/' を発見。
-	    set_msg('make_select_screen_iter: 3');
 	    
 	    /* 以下のような感じに作る。
 	     * <li> <a onclick="expand_or_coarse_on_click('new_div')"> directory name </a>
@@ -293,9 +307,7 @@ function make_select_screen_iter(parent, prefix, idx)
 			       expand_or_coarse_on_click(new_div));
 	    
 	    idx = make_select_screen_iter(new_div, new_pfx, idx);
-	    set_msg('make_select_screen_iter: 4');
 	}
-	set_msg('make_select_screen_iter: 5');
     }
 }
 
