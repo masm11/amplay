@@ -224,6 +224,62 @@ function got_metadata(audio, title_node, artist_node)
 	var meta = a.mozGetMetadata();
 	title.nodeValue = (meta.TITLE || '不明なタイトル');
 	artist.nodeValue = (meta.ARTIST || '不明なアーティスト');
+	
+	idx++;
+	setTimeout(make_select_screen_iter_file, 1);
+    }
+}
+
+var parents = [];
+var idxs = [];
+var fnames = [];
+var idx = 0;
+
+function make_select_screen_iter_file() {
+    if (idx >= parents.length)
+	return;
+    
+    var li = document.createElement("li");
+    parents[idx].appendChild(li);
+    
+    var a = document.createElement("a");
+    li.appendChild(a);
+    a.addEventListener('click', play_on_click(idxs[idx]));
+    
+    var fname_span = document.createElement('span');
+    fname_span.style.fontSize = '1rem';
+    fname_span.style.color = '#000080';
+    a.appendChild(fname_span);
+    var fname = document.createTextNode(fnames[idx]);
+    fname_span.appendChild(fname);
+    
+    var br1 = document.createElement("br");
+    a.appendChild(br1);
+    
+    var title = document.createTextNode('title');
+    a.appendChild(title);
+    
+    var br2 = document.createElement("br");
+    a.appendChild(br2);
+    
+    var artist_span = document.createElement('span');
+    artist_span.style.fontSize = '1rem';
+    artist_span.style.color = '#808080';
+    a.appendChild(artist_span);
+    var artist = document.createTextNode('artist');
+    artist_span.appendChild(artist);
+    
+    if (files[idxs[idx]].name.indexOf('.wav', 0) >= 0) {
+	// イベントが飛んでこない...
+	title.nodeValue = '不明なタイトル';
+	artist.nodeValue = '不明なアーティスト';
+	
+	idx++;
+	make_select_screen_iter_file();
+    } else {
+	var tempaudio = new Audio(window.URL.createObjectURL(files[idxs[idx]]));
+	tempaudio.preload = 'metadata';
+	tempaudio.addEventListener('loadedmetadata', got_metadata(tempaudio, title, artist));
     }
 }
 
@@ -242,39 +298,9 @@ function make_select_screen_iter(parent, prefix, idx)
 	if (slash == -1) {
 	    // これ以上 '/' がない。
 	    
-	    var li = document.createElement("li");
-	    parent.appendChild(li);
-	    
-	    var a = document.createElement("a");
-	    li.appendChild(a);
-	    a.addEventListener('click', play_on_click(idx));
-	    
-	    var fname_span = document.createElement('span');
-	    fname_span.style.fontSize = '1rem';
-	    fname_span.style.color = '#000080';
-	    a.appendChild(fname_span);
-	    var fname = document.createTextNode(files[idx].name.substring(prefix.length));
-	    fname_span.appendChild(fname);
-	    
-	    var br1 = document.createElement("br");
-	    a.appendChild(br1);
-	    
-	    var title = document.createTextNode('title');
-	    a.appendChild(title);
-	    
-	    var br2 = document.createElement("br");
-	    a.appendChild(br2);
-	    
-	    var artist_span = document.createElement('span');
-	    artist_span.style.fontSize = '1rem';
-	    artist_span.style.color = '#808080';
-	    a.appendChild(artist_span);
-	    var artist = document.createTextNode('artist');
-	    artist_span.appendChild(artist);
-	    
-	    var tempaudio = new Audio(window.URL.createObjectURL(files[idx]));
-	    tempaudio.preload = 'metadata';
-	    tempaudio.addEventListener('loadedmetadata', got_metadata(tempaudio, title, artist));
+	    parents.push(parent);
+	    idxs.push(idx);
+	    fnames.push(files[idx].name.substring(prefix.length));
 	    
 	    idx++;
 	} else {
@@ -329,11 +355,16 @@ function make_select_screen() {
     set_msg('make_select_screen: 3.');
     
     // 作成
+    parents = [];
+    idxs = [];
+    idx = 0;
     ul = document.createElement("ul");
     make_select_screen_iter(ul, '/sdcard/Music/', 0);
     document.getElementById("list").appendChild(ul);
     
     screen_step(2);
+    
+    make_select_screen_iter_file();
     set_msg('make_select_screen: done.');
 }
 
