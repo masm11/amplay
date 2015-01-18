@@ -8,10 +8,6 @@ body {
   /* background: #fee; */
 }
 
-#body {
-  background-image: -moz-element(#canvasbg);
-}
-
 h1 {
   margin: 0 0 1rem 0;
   width: 100%;
