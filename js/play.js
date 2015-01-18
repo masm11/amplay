@@ -116,9 +116,13 @@ function play_seek() {
 /* 前の曲を再生。
  */
 function play_prev() {
-    if (--curidx < 0)
-	curidx = files.length - 1;
-    play_cur();
+    if (audio.currentTime < 3) {
+	if (--curidx < 0)
+	    curidx = files.length - 1;
+	play_cur();
+    } else {
+	audio.currentTime = 0;
+    }
 }
 
 /* 次の曲を再生。
