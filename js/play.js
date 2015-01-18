@@ -251,6 +251,7 @@ function make_select_screen_iter(parent, prefix, idx)
 	    
 	    var fname_span = document.createElement('span');
 	    fname_span.style.fontSize = '1rem';
+	    fname_span.style.color = '#000080';
 	    a.appendChild(fname_span);
 	    var fname = document.createTextNode(files[idx].name.substring(prefix.length));
 	    fname_span.appendChild(fname);
