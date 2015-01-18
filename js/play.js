@@ -273,6 +273,7 @@ function make_select_screen_iter(parent, prefix, idx)
 	    artist_span.appendChild(artist);
 	    
 	    var tempaudio = new Audio(window.URL.createObjectURL(files[idx]));
+	    tempaudio.preload = 'metadata';
 	    tempaudio.addEventListener('loadedmetadata', got_metadata(tempaudio, title, artist));
 	    
 	    idx++;
