@@ -341,6 +341,12 @@ window.onload = function() {
     });
     audio.addEventListener('loadedmetadata', function() {
 	seekbar.max = audio.duration;
+	set_msg('metadata loaded.');
+	var meta = audio.mozGetMetadata();
+	set_msg('metadata.' + meta);
+	set_msg('metadata.keys=' + Object.keys(meta));
+	document.getElementById('title').firstChild.nodeValue = (meta.TITLE || '不明なタイトル');
+	document.getElementById('artist').firstChild.nodeValue = (meta.ARTIST || '不明なアーティスト');
     });
     
     set_msg('onload0');

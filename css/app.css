@@ -50,3 +50,14 @@ div.celem {
     left: 0px;
     display: block;
 }
+
+#main {
+    position: absolute;
+    top: 40%;
+    margin-top: -1rem;
+}
+
+#artist {
+    font-size: 1rem;
+    color: #808080;
+}
