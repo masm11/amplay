@@ -1,14 +1,14 @@
 var canvas;
 var gl;
 
-function bg_init() {
+function logo_init() {
 /*
     canvas = document.createElement('canvas');
     canvas.setAttribute('width', 720);
     canvas.setAttribute('height', 1280);
     document.mozSetImageElement('canvasbg', canvas);
 */
-    canvas = document.getElementById('test');
+    canvas = document.getElementById('logo');
     
     start();
 }
@@ -47,7 +47,7 @@ function start() {
   if (gl) {
 // masm
 //    gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-    gl.clearColor(0.5, 0.5, 0.5, 1.0);
+    gl.clearColor(1.0, 15/16, 15/16, 1.0);
     gl.clearDepth(1.0);                 // Clear everything
     gl.enable(gl.DEPTH_TEST);           // Enable depth testing
     gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
@@ -309,7 +309,7 @@ function drawScene() {
   
   // masm
   // perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
-  perspectiveMatrix = makePerspective(45, 720.0/1280.0, 0.1, 100.0);
+  perspectiveMatrix = makePerspective(45, 1.0, 0.1, 100.0);
   
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
@@ -320,7 +320,7 @@ function drawScene() {
   // drawing the cube.
   
   // masm
-  mvTranslate([0.0, 0.0, -6.0]);
+  mvTranslate([0.0, 0.0, -4.0]);
   // mvTranslate([0.0, 0.0, -50.0]);
   
   // Save the current matrix, then rotate before we draw.

@@ -512,4 +512,6 @@ window.onload = function() {
 	set_msg('No music storage.');
 	alert('No music storage.');
     }
+
+    logo_init();
 };
