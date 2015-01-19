@@ -21,31 +21,21 @@ function set_msg(str) {
 
 /* 場面に応じた画面を表示する。
  */
-function screen_step(step)
-{
+function screen_change() {
     var div0 = document.getElementById('scanning');
     var div1 = document.getElementById('main');
     var div2 = document.getElementById('list');
     var div3 = document.getElementById('control');
-    switch (step) {
-    case 0:
-	div0.style.display = 'block';
-	div1.style.display = 'none';
-	div2.style.display = 'none';
-	div3.style.display = 'none';
-	break;
-    case 1:
+    if (div1.style.display == 'none') {
 	div0.style.display = 'none';
 	div1.style.display = 'block';
 	div2.style.display = 'none';
 	div3.style.display = 'block';
-	break;
-    case 2:
+    } else {
 	div0.style.display = 'none';
 	div1.style.display = 'none';
 	div2.style.display = 'block';
 	div3.style.display = 'block';
-	break;
     }
 }
 
@@ -210,7 +200,7 @@ function play_on_click(id) {
     return function() {
 	curidx = mid;
 	play_cur();
-	screen_step(1);
+	screen_change();
     }
 }
 
@@ -378,21 +368,19 @@ function make_select_screen() {
     make_select_screen_iter(ul, '/sdcard/Music/', 0);
     document.getElementById("list").appendChild(ul);
     
-//    screen_step(2);
-    
     make_select_screen_iter_file();
     set_msg('make_select_screen: done.');
 }
 
 function select_screen() {
-    screen_step(2);
+    screen_change();
 }
 
 /* 曲選択画面から戻る。
  */
 function cancel_select_screen() {
     set_msg('cancel_select_screen: start.');
-    screen_step(1);
+    screen_change();
     set_msg('cancel_select_screen: done.');
 }
 
@@ -499,7 +487,7 @@ window.onload = function() {
 		play_cur();
 		pause();
 		
-		screen_step(1);
+		screen_change();
 
 		make_select_screen();
 	    }
