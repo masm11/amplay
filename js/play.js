@@ -239,7 +239,7 @@ function got_metadata(audio, title_node, artist_node)
 	artist.nodeValue = (meta.ARTIST || '不明なアーティスト');
 	
 	idx++;
-	setTimeout(make_select_screen_iter_file, 1);
+	setTimeout(make_select_screen_iter_file, 0);
     }
 }
 
