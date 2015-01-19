@@ -75,11 +75,22 @@ function restore_cur() {
 
 restore_cur();
 
+function switch_play_pause_button(pp) {
+    if (pp) {
+	document.getElementById('eplay').style.display = 'none';
+	document.getElementById('epause').style.display = 'block';
+    } else {
+	document.getElementById('eplay').style.display = 'block';
+	document.getElementById('epause').style.display = 'none';
+    }
+}
+
 /* そのまま再生。
  */
 function play() {
     audio.play();
     playing = true;
+    switch_play_pause_button(true);
 }
 
 /* curidx で示される曲を最初から再生。
@@ -101,6 +112,7 @@ function play_cur() {
     set_msg('' + audio.src);
     audio.play();
     playing = true;
+    switch_play_pause_button(true);
     audio.addEventListener('ended', play_next);
     
     save_cur();
@@ -166,6 +178,7 @@ set_msg('stop1');
 set_msg('stop2');
     audio.pause();
     playing = false;
+    switch_play_pause_button(false);
 set_msg('stop3');
 }
 
