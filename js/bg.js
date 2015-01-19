@@ -366,7 +366,7 @@ function drawScene() {
   if (lastCubeUpdateTime) {
     var delta = currentTime - lastCubeUpdateTime;
     
-    cubeRotation += (30 * delta) / 1000.0;
+    cubeRotation += (60 * delta) / 1000.0;
   }
   
   lastCubeUpdateTime = currentTime;
