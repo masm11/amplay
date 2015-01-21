@@ -123,10 +123,8 @@ MediaRemoteControls.prototype.removeCommandListener = function(name, listener) {
  * Setup the bluetooth/system message, IAC and wired controls.
  */
 MediaRemoteControls.prototype.start = function(callback) {
-  set_msg('mrc.start: 0');
   this._setupBluetooth(callback);
   this._setupIAC();
-  set_msg('mrc.start: 1');
 };
 
 /*
@@ -175,14 +173,14 @@ MediaRemoteControls.prototype._setupBluetooth = function(callback) {
   }
 
   function playstatusHandler() {
-    set_msg('_setupBluetooth: 2');
-    set_msg('_setupBluetooth: 2.0');
+//    set_msg('_setupBluetooth: 2');
+//    set_msg('_setupBluetooth: 2.0');
     if (self._commandListeners['updateplaystatus'].length > 0) {
-	set_msg('_setupBluetooth: 2.1');
+//	set_msg('_setupBluetooth: 2.1');
 	self._commandHandler(REMOTE_CONTROLS.UPDATE_PLAYSTATUS);
-	set_msg('_setupBluetooth: 2.2');
+//	set_msg('_setupBluetooth: 2.2');
     }
-    set_msg('_setupBluetooth: 2.3');
+//    set_msg('_setupBluetooth: 2.3');
   }
 
   // A2DP is connected: update the status to the bluetooth device.
@@ -363,16 +361,16 @@ MediaRemoteControls.prototype._commandHandler = function(message) {
  * @param {Object} event
  */
 MediaRemoteControls.prototype._executeCommandListeners = function(event) {
-  set_msg('_executeCommandListeners: 0');
+//  set_msg('_executeCommandListeners: 0');
   if (!event.detail)
     return;
-  set_msg('_executeCommandListeners: 1');
+  set_msg('_executeCommandListeners: 1: ' + event.detail.command);
 
   this._commandListeners[event.detail.command].forEach(function(listener) {
-    set_msg('_executeCommandListeners: 2: listener=' + listener);
+//    set_msg('_executeCommandListeners: 2: listener=' + listener);
     listener(event);
   });
-  set_msg('_executeCommandListeners: 3');
+//  set_msg('_executeCommandListeners: 3');
 };
 
 MediaRemoteControls.prototype.notifyAppInfo = function(info) {

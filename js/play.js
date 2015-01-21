@@ -137,22 +137,38 @@ function play_next() {
 
 function mrc_play() {
     set_msg('mrc play');
+    play();
 }
 
 function mrc_pause() {
     set_msg('mrc pause');
+    pause();
 }
 
 function mrc_playpause() {
     set_msg('mrc playpause');
-}
-
-function mrc_updateplaystatus(e) {
-    set_msg('mrc updateplaystatus: ' + e.detail['command']);
     if (playing)
 	pause();
     else
 	play();
+}
+
+function mrc_next() {
+    play_next();
+}
+
+function mrc_prev() {
+    play_prev();
+}
+
+function mrc_updateplaystatus(e) {
+    set_msg('mrc updateplaystatus: ' + e.detail['command']);
+/*
+    if (playing)
+	pause();
+    else
+	play();
+*/
 }
 
 function mrc_updatemetadata(e) {
@@ -164,12 +180,12 @@ function mrc_updatemetadata(e) {
 /* 一時停止
  */
 function pause() {
-set_msg('stop1');
-set_msg('stop2');
+//set_msg('stop1');
+//set_msg('stop2');
     audio.pause();
     playing = false;
     switch_play_pause_button(false);
-set_msg('stop3');
+//set_msg('stop3');
 }
 
 var radio = navigator.mozFMRadio;
@@ -465,7 +481,10 @@ window.onload = function() {
     set_msg('onload12');
     mrc.addCommandListener('play', mrc_play);
     mrc.addCommandListener('pause', mrc_pause);
+    mrc.addCommandListener('stop', mrc_pause);
     mrc.addCommandListener('playpause', mrc_playpause);
+    mrc.addCommandListener('next', mrc_next);
+    mrc.addCommandListener('previous', mrc_prev);
     mrc.addCommandListener('updateplaystatus', mrc_updateplaystatus);
     mrc.addCommandListener('updatemetadata', mrc_updatemetadata);
     mrc.start();
