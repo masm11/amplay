@@ -97,9 +97,9 @@ function play_cur() {
 	curidx = 0;
     }
     
-    set_msg('' + audio);
+//    set_msg('' + audio);
     audio.src = window.URL.createObjectURL(files[curidx]);
-    set_msg('' + audio.src);
+//    set_msg('' + audio.src);
     audio.play();
     playing = true;
     switch_play_pause_button(true);
@@ -205,7 +205,8 @@ set_msg('r5');
     }
 }
 
-radio.addEventListener('antennaavailablechange', play_or_stop);
+if (radio)
+    radio.addEventListener('antennaavailablechange', play_or_stop);
 
 /* 曲リストからファイルを選択すると、再生開始して
  * 画面を main に戻す。…ような関数を返す。
@@ -249,18 +250,32 @@ function got_metadata(audio, title_node, artist_node)
     }
 }
 
+/* 何故か metadata が得られなかった場合。
+ */
+function metadata_timeout()
+{
+    idx++;
+    setTimeout(make_select_screen_iter_file, 0);
+}
+
 var parents = [];
 var idxs = [];
 var fnames = [];
 var idx = 0;
+var timer = 0;
 
 function make_select_screen_iter_file() {
+    if (timer != 0) {
+	clearTimeout(timer);
+	timer = 0;
+    }
     if (idx >= parents.length) {
 	document.getElementById('eject').style.display = 'block';
 	document.getElementById('spinner').style.display = 'none';
 	return;
     }
     
+//    set_msg('' + files[idxs[idx]].name);
     var li = document.createElement("li");
     parents[idx].appendChild(li);
     
@@ -291,7 +306,13 @@ function make_select_screen_iter_file() {
     var artist = document.createTextNode('artist');
     artist_span.appendChild(artist);
     
-    if (files[idxs[idx]].name.indexOf('.wav', 0) >= 0) {
+    if (!audio.canPlayType(files[idxs[idx]].type)) {
+	title.nodeValue = '不明なタイトル';
+	artist.nodeValue = '不明なアーティスト';
+	
+	idx++;
+	make_select_screen_iter_file();
+    } else if (files[idxs[idx]].name.indexOf('.wav', 0) >= 0) {
 	// イベントが飛んでこない...
 	title.nodeValue = '不明なタイトル';
 	artist.nodeValue = '不明なアーティスト';
@@ -302,6 +323,7 @@ function make_select_screen_iter_file() {
 	var tempaudio = new Audio(window.URL.createObjectURL(files[idxs[idx]]));
 	tempaudio.preload = 'metadata';
 	tempaudio.addEventListener('loadedmetadata', got_metadata(tempaudio, title, artist));
+	timer = setTimeout(metadata_timeout, 1000);
     }
 }
 
@@ -313,7 +335,7 @@ function make_select_screen_iter_file() {
 function make_select_screen_iter(parent, prefix, idx)
 {
     while (idx < files.length) {
-	if (files[idx].name.lastIndexOf(prefix, 0) != 0)	// if startsWith(prefix)
+	if (files[idx].name.lastIndexOf(prefix, 0) != 0)	// if !startsWith(prefix)
 	    return idx;
 	
 	var slash = files[idx].name.indexOf('/', prefix.length);
@@ -374,14 +396,18 @@ function make_select_screen() {
     set_msg('make_select_screen: 2.');
     if (ul && ul[0])
 	list.removeChild(ul[0]);
-    set_msg('make_select_screen: 3.');
+    set_msg('make_select_screen: 3: ' + files.length);
     
     // 作成
     parents = [];
     idxs = [];
     idx = 0;
     ul = document.createElement("ul");
-    make_select_screen_iter(ul, '/sdcard/Music/', 0);
+    if (files.length >= 1 && files[0].name.lastIndexOf('/sdcard/Music/') == 0) {
+	make_select_screen_iter(ul, '/sdcard/Music/', 0);
+    } else {
+	make_select_screen_iter(ul, 'Music/', 0);
+    }
     document.getElementById("list").appendChild(ul);
     
     make_select_screen_iter_file();
@@ -433,10 +459,10 @@ window.onload = function() {
     });
     audio.addEventListener('loadedmetadata', function() {
 	seekbar.max = audio.duration;
-	set_msg('metadata loaded.');
+//	set_msg('metadata loaded.');
 	var meta = audio.mozGetMetadata();
-	set_msg('metadata.' + meta);
-	set_msg('metadata.keys=' + Object.keys(meta));
+//	set_msg('metadata.' + meta);
+//	set_msg('metadata.keys=' + Object.keys(meta));
 	document.getElementById('title').firstChild.nodeValue = (meta.TITLE || '不明なタイトル');
 	document.getElementById('artist').firstChild.nodeValue = (meta.ARTIST || '不明なアーティスト');
     });
