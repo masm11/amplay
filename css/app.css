@@ -53,6 +53,11 @@ div.celem {
     margin-top: -1rem;
 }
 
+#filename {
+    font-size: 1rem;
+    color: #000080;
+}
+
 #artist {
     font-size: 1rem;
     color: #808080;

@@ -404,8 +404,10 @@ function make_select_screen() {
     idx = 0;
     ul = document.createElement("ul");
     if (files.length >= 1 && files[0].name.lastIndexOf('/sdcard/Music/') == 0) {
+	// 実機
 	make_select_screen_iter(ul, '/sdcard/Music/', 0);
     } else {
+	// simulator
 	make_select_screen_iter(ul, 'Music/', 0);
     }
     document.getElementById("list").appendChild(ul);
@@ -463,6 +465,13 @@ window.onload = function() {
 	var meta = audio.mozGetMetadata();
 //	set_msg('metadata.' + meta);
 //	set_msg('metadata.keys=' + Object.keys(meta));
+	var lastslash = files[curidx].name.lastIndexOf('/');
+	var notdir;
+	if (lastslash >= 0)
+	    notdir = files[curidx].name.substring(lastslash + 1);
+	else
+	    notdir = files[curidx].name;
+	document.getElementById('filename').firstChild.nodeValue = notdir;
 	document.getElementById('title').firstChild.nodeValue = (meta.TITLE || '不明なタイトル');
 	document.getElementById('artist').firstChild.nodeValue = (meta.ARTIST || '不明なアーティスト');
     });
