@@ -47,7 +47,7 @@ div.celem {
     display: block;
 }
 
-#main {
+div.main {
     position: absolute;
     top: 40%;
     margin-top: -1rem;
@@ -65,4 +65,10 @@ div.celem {
 
 #time {
     float: right;
+}
+
+div.list_header {
+    position: fixed;
+    top: 5px;
+    left: 5px;
 }

@@ -91,22 +91,28 @@
     </head>
     <body>
         <section>
-          <h1 data-l10n-id="app_title">All Music Player</h1>
-<!--
-          <p data-l10n-id="app_description">This plays all the musics in order of the file path.</p>
--->
 	  <div id="scanning" style="display: block">
+            <h1 data-l10n-id="app_title">All Music Player</h1>
+	    <!--
+		<p data-l10n-id="app_description">This plays all the musics in order of the file path.</p>
+		-->
 	    <p id="scanmsg">scanning...<i class="fa fa-spinner fa-spin"></i></p>
 	  </div>
 	  
 	  <div id="main" style="display: none">
-	    <p id="filename">.</p>
-	    <p id="title">.</p>
-	    <p id="artist">.</p>
+            <h1 data-l10n-id="app_title">All Music Player</h1>
+	    <!--
+		<p data-l10n-id="app_description">This plays all the musics in order of the file path.</p>
+		-->
+	    <div class="main">
+	      <p id="filename">.</p>
+	      <p id="title">.</p>
+	      <p id="artist">.</p>
+	    </div>
 	  </div>
 	  
 	  <div id="list" style="display: none">
-	    <p><a id="select_cancel">キャンセル</a></p>
+	    <div class="list_header" id="select_cancel"><i class="fa fa-angle-left fa-lg"></i></div>
 	  </div>
 
 	  <canvas id="test"></canvas>
