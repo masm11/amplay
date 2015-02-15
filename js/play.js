@@ -1,5 +1,5 @@
 var files = [];
-var curidx = 0;
+var curidx = -1;
 var audiocontext = new AudioContext('content');
 
 var cur_begtime = 0;
@@ -70,7 +70,7 @@ function restore_cur() {
 	curidx = idx * 1;	// "*1": 数値に変換
 }
 
-restore_cur();
+// restore_cur();
 
 function switch_play_pause_button(pp) {
     if (pp) {
@@ -84,51 +84,114 @@ function switch_play_pause_button(pp) {
 
 
 var context = new AudioContext('content');
+var xhr;
+var decoded_buffer;
 
 function loadSound(url) {
-    var request = new XMLHttpRequest();
-    request.open('GET', url, true);
-    request.responseType = 'arraybuffer';
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    decoded_buffer = undefined;
     
     // Decode asynchronously
-    request.onload = function() {
-	context.decodeAudioData(request.response, function(buffer) {
-	    playSound(buffer);
+    xhr.onload = function() {
+	context.decodeAudioData(xhr.response, function(buffer) {
+		decoded_buffer = buffer;
 	}, function() {
 	    alert('decode error.');
 	});
+	xhr = undefined;
     };
-    request.onerror = function() {
-	alert('request.onerror.');
+    xhr.onerror = function() {
+	alert('xhr.onerror.');
+	xhr = undefined;
     };
-    request.send();
+    xhr.send();
 }
 
-function playSound(buffer) {
-    if (!playing) {
-	next_begtime = context.currentTime + 1;
-	next_endtime = next_begtime + buffer.duration;
-
-	cur_begtime = next_begtime;
-	cur_endtime = next_endtime;
-    } else {
-	next_begtime = cur_endtime;
-	next_endtime = next_begtime + buffer.duration;
-    }
-    
-    next_src = context.createBufferSource();
-    next_src.buffer = buffer;
-    next_src.connect(context.destination);
-    next_src.start(next_begtime);
-    
-    if (!playing) {
-	var url = window.URL.createObjectURL(files[501]);
-	loadSound(url);
-    }
+function playSound(buffer, begtime) {
+    var src = context.createBufferSource();
+    src.buffer = buffer;
+    src.connect(context.destination);
+    src.start(begtime);
     
     playing = true;
+    
+    return src;
 }
 
+var step = -1;
+function timer() {
+    switch (step) {
+    case -1:
+	// storage.enumerate() が終わるまで待つ。
+	if (curidx >= 0)
+	    step++;
+	break;
+    case 0:
+	// 最初の曲の decode を開始
+	if (true) {
+	    var url = window.URL.createObjectURL(files[curidx]);
+	    loadSound(url);
+	    
+	    step++;
+	}
+	break;
+	
+    case 1:
+	// decode が完了したら再生開始。
+	if (decoded_buffer) {
+	    cur_begtime = audiocontext.currentTime + 1;
+	    cur_endtime = cur_begtime + decoded_buffer.duration;
+	    cur_src = playSound(decoded_buffer, cur_begtime);
+	    // 次の step で cur_xxx = next_xxx とするので、その対策。
+	    next_begtime = cur_begtime;
+	    next_endtime = cur_endtime;
+	    next_src = cur_src;
+	    
+	    decoded_buffer = undefined;
+	    
+	    step++;
+	}
+	break;
+	
+    case 2:
+	// 次の曲の再生が始まったら、その次の曲をキューイング。
+	if (audiocontext.currentTime >= next_begtime) {
+	    // 次の曲の再生が始まった。
+	    cur_begtime = next_begtime;
+	    cur_endtime = next_endtime;
+	    cur_src = next_src;
+	    
+	    // 更に次の曲をキューイング処理開始。
+	    if (++curidx >= files.length)
+		curidx = 0;
+	    var url = window.URL.createObjectURL(files[curidx]);
+	    loadSound(url);
+	    
+	    step++;
+	}
+	break;
+	
+    case 3:
+	// decode が完了したら再生準備。
+	if (decoded_buffer) {
+	    next_begtime = cur_endtime;
+	    next_endtime = next_begtime + decoded_buffer.duration;
+	    next_src = playSound(decoded_buffer, next_begtime);
+	    
+	    decoded_buffer = undefined;
+	    
+	    step--;
+	}
+	break;
+	
+    case 4:
+	break;
+    }
+}
+
+window.setInterval(timer, 100);
 
 /* そのまま再生。
  */
@@ -595,8 +658,9 @@ window.onload = function() {
 		// audio の src をセット
 //		play_cur();
 //		pause();
-		var url = window.URL.createObjectURL(files[500]);
-		loadSound(url);
+		curidx = 500;
+//		var url = window.URL.createObjectURL(files[curidx]);
+//		loadSound(url);
 		
 		screen_change();
 
