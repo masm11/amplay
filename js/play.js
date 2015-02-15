@@ -106,32 +106,27 @@ function loadSound(url) {
 
 function playSound(buffer) {
     if (!playing) {
-	cur_begtime = context.currentTime + 1;
-	cur_endtime = cur_begtime + buffer.duration;
-	
-	next_begtime = cur_begtime;
-	next_endtime = cur_endtime;
-	
-	next_src = context.createBufferSource();
-	next_src.buffer = buffer;
-	next_src.connect(context.destination);
-	next_src.start(next_begtime);
-	
-	var url = window.URL.createObjectURL(files[501]);
-	loadSound(url);
-	
-	playing = true;
+	next_begtime = context.currentTime + 1;
+	next_endtime = next_begtime + buffer.duration;
+
+	cur_begtime = next_begtime;
+	cur_endtime = next_endtime;
     } else {
 	next_begtime = cur_endtime;
 	next_endtime = next_begtime + buffer.duration;
-	
-	next_src = context.createBufferSource();
-	next_src.buffer = buffer;
-	next_src.connect(context.destination);
-	next_src.start(next_begtime);
-	
-	playing = true;
     }
+    
+    next_src = context.createBufferSource();
+    next_src.buffer = buffer;
+    next_src.connect(context.destination);
+    next_src.start(next_begtime);
+    
+    if (!playing) {
+	var url = window.URL.createObjectURL(files[501]);
+	loadSound(url);
+    }
+    
+    playing = true;
 }
 
 
