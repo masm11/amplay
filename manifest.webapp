@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
-  "name": "amplay",
-  "description": "All Music Player",
+  "name": "amplay2",
+  "description": "All Music Player AudioContext version",
   "launch_path": "/index.html",
   "icons": {
     "128": "/img/icons/icon128x128.png",

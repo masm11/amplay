@@ -1,6 +1,13 @@
 var files = [];
 var curidx = 0;
-var audio;
+var audiocontext = new AudioContext('content');
+
+var cur_begtime = 0;
+var cur_endtime = 0;
+var cur_src;
+var next_begtime = 0;
+var next_endtime = 0;
+var next_src;
 
 var playing = false;
 
@@ -74,6 +81,59 @@ function switch_play_pause_button(pp) {
 	document.getElementById('epause').style.display = 'none';
     }
 }
+
+
+var context = new AudioContext('content');
+
+function loadSound(url) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+    
+    // Decode asynchronously
+    request.onload = function() {
+	context.decodeAudioData(request.response, function(buffer) {
+	    playSound(buffer);
+	}, function() {
+	    alert('decode error.');
+	});
+    };
+    request.onerror = function() {
+	alert('request.onerror.');
+    };
+    request.send();
+}
+
+function playSound(buffer) {
+    if (!playing) {
+	cur_begtime = context.currentTime + 1;
+	cur_endtime = cur_begtime + buffer.duration;
+	
+	next_begtime = cur_begtime;
+	next_endtime = cur_endtime;
+	
+	next_src = context.createBufferSource();
+	next_src.buffer = buffer;
+	next_src.connect(context.destination);
+	next_src.start(next_begtime);
+	
+	var url = window.URL.createObjectURL(files[501]);
+	loadSound(url);
+	
+	playing = true;
+    } else {
+	next_begtime = cur_endtime;
+	next_endtime = next_begtime + buffer.duration;
+	
+	next_src = context.createBufferSource();
+	next_src.buffer = buffer;
+	next_src.connect(context.destination);
+	next_src.start(next_begtime);
+	
+	playing = true;
+    }
+}
+
 
 /* そのまま再生。
  */
@@ -538,8 +598,10 @@ window.onload = function() {
 		set_msg('done.');
 		
 		// audio の src をセット
-		play_cur();
-		pause();
+//		play_cur();
+//		pause();
+		var url = window.URL.createObjectURL(files[500]);
+		loadSound(url);
 		
 		screen_change();
 
