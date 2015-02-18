@@ -1,13 +1,16 @@
 var files = [];
 var curidx = -1;
-var audiocontext = new AudioContext('content');
 
 var cur_begtime = 0;
 var cur_endtime = 0;
+var cur_buf;
 var cur_src;
+var cur_idx = 0;
 var next_begtime = 0;
 var next_endtime = 0;
+var next_buf;
 var next_src;
+void next_idx = 0;
 
 var playing = false;
 
@@ -120,6 +123,9 @@ function playSound(buffer, begtime) {
     return src;
 }
 
+var pause_pressed = false;
+var pause_time = 0;
+
 var step = -1;
 function timer() {
     switch (step) {
@@ -141,12 +147,14 @@ function timer() {
     case 1:
 	// decode が完了したら再生開始。
 	if (decoded_buffer) {
-	    cur_begtime = audiocontext.currentTime + 1;
+	    cur_begtime = context.currentTime + 1;
 	    cur_endtime = cur_begtime + decoded_buffer.duration;
-	    cur_src = playSound(decoded_buffer, cur_begtime);
+	    cur_buf = decoded_buffer;
+	    cur_src = playSound(cur_buf, cur_begtime);
 	    // 次の step で cur_xxx = next_xxx とするので、その対策。
 	    next_begtime = cur_begtime;
 	    next_endtime = cur_endtime;
+	    next_buf = cur_buf;
 	    next_src = cur_src;
 	    
 	    decoded_buffer = undefined;
@@ -156,11 +164,18 @@ function timer() {
 	break;
 	
     case 2:
+	if (pause_pressed) {
+	    pause_pressed = false;
+	    step = 11;
+	    break;
+	}
+	
 	// 次の曲の再生が始まったら、その次の曲をキューイング。
-	if (audiocontext.currentTime >= next_begtime) {
+	if (context.currentTime >= next_begtime) {
 	    // 次の曲の再生が始まった。
 	    cur_begtime = next_begtime;
 	    cur_endtime = next_endtime;
+	    cur_buf = next_buf;
 	    cur_src = next_src;
 	    
 	    // 更に次の曲をキューイング処理開始。
@@ -174,11 +189,18 @@ function timer() {
 	break;
 	
     case 3:
+	if (pause_pressed) {
+	    pause_pressed = false;
+	    step = 11;
+	    break;
+	}
+	
 	// decode が完了したら再生準備。
 	if (decoded_buffer) {
 	    next_begtime = cur_endtime;
 	    next_endtime = next_begtime + decoded_buffer.duration;
-	    next_src = playSound(decoded_buffer, next_begtime);
+	    next_buf = decoded_buffer;
+	    next_src = playSound(next_buf, next_begtime);
 	    
 	    decoded_buffer = undefined;
 	    
@@ -187,6 +209,51 @@ function timer() {
 	break;
 	
     case 4:
+	break;
+
+    case 11:
+	// 再生時刻の保存。
+	pause_time = context.currentTime - cur_begtime;
+
+	playing = false;
+	
+	// 再生を止める。
+	if (next_src) {
+	    next_src.disconnect();
+	    next_src = undefined;
+	}
+	if (cur_src) {
+	    cur_src.disconnect();
+	    cur_src = undefined;
+	}
+	step++;
+	break;
+
+    case 12:
+	if (pause_pressed) {
+	    pause_pressed = false;
+
+	    if (cur_buf) {
+		cur_src = context.createBufferSource();
+		cur_src.buffer = cur_buf;
+		cur_src.connect(context.destination);
+		cur_src.start(context.currentTime, pause_time);
+
+		cur_begtime = context.currentTime - pause_time;
+		cur_endtime = cur_begtime + cur_buf.duration;;
+	    }
+	    
+	    if (next_buf) {
+		next_src = context.createBufferSource();
+		next_src.buffer = next_buf;
+		next_src.connect(context.destination);
+		next_begtime = cur_endtime;
+		next_endtime = next_begtime + next_buf.duration;
+		next_src.start(next_begtime);
+	    }
+	    
+	    step = 2;
+	}
 	break;
     }
 }
@@ -300,6 +367,7 @@ function mrc_updatemetadata(e) {
 function pause() {
 //set_msg('stop1');
 //set_msg('stop2');
+    pause_pressed = true;
     audio.pause();
     playing = false;
     switch_play_pause_button(false);
@@ -658,7 +726,7 @@ window.onload = function() {
 		// audio の src をセット
 //		play_cur();
 //		pause();
-		curidx = 500;
+		curidx = 0;
 //		var url = window.URL.createObjectURL(files[curidx]);
 //		loadSound(url);
 		
