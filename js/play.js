@@ -5,12 +5,12 @@ var cur_begtime = 0;
 var cur_endtime = 0;
 var cur_buf;
 var cur_src;
-var cur_idx = 0;
+var cur_idx = -1;
 var next_begtime = 0;
 var next_endtime = 0;
 var next_buf;
 var next_src;
-void next_idx = 0;
+var next_idx = -1;
 
 var playing = false;
 
@@ -131,13 +131,13 @@ function timer() {
     switch (step) {
     case -1:
 	// storage.enumerate() が終わるまで待つ。
-	if (curidx >= 0)
+	if (cur_idx >= 0)
 	    step++;
 	break;
     case 0:
 	// 最初の曲の decode を開始
 	if (true) {
-	    var url = window.URL.createObjectURL(files[curidx]);
+	    var url = window.URL.createObjectURL(files[cur_idx]);
 	    loadSound(url);
 	    
 	    step++;
@@ -156,6 +156,7 @@ function timer() {
 	    next_endtime = cur_endtime;
 	    next_buf = cur_buf;
 	    next_src = cur_src;
+	    next_idx = cur_idx;
 	    
 	    decoded_buffer = undefined;
 	    
@@ -177,11 +178,13 @@ function timer() {
 	    cur_endtime = next_endtime;
 	    cur_buf = next_buf;
 	    cur_src = next_src;
+	    cur_idx = next_idx;
 	    
 	    // 更に次の曲をキューイング処理開始。
-	    if (++curidx >= files.length)
-		curidx = 0;
-	    var url = window.URL.createObjectURL(files[curidx]);
+	    next_idx = cur_idx + 1;
+	    if (next_idx >= files.length)
+		next_idx = 0;
+	    var url = window.URL.createObjectURL(files[next_idx]);
 	    loadSound(url);
 	    
 	    step++;
@@ -726,7 +729,7 @@ window.onload = function() {
 		// audio の src をセット
 //		play_cur();
 //		pause();
-		curidx = 0;
+		cur_idx = 0;
 //		var url = window.URL.createObjectURL(files[curidx]);
 //		loadSound(url);
 		
