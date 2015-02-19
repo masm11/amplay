@@ -324,8 +324,6 @@ function timer() {
 
 window.setInterval(timer, 100);
 
-/* そのまま再生。
- */
 function play() {
     play_pressed = true;
     switch_play_pause_button(true);
@@ -336,14 +334,10 @@ function play_seek() {
     audio.currentTime = this.value;
 }
 
-/* 前の曲を再生。
- */
 function play_prev() {
     back_pressed = true;
 }
 
-/* 次の曲を再生。
- */
 function play_next() {
     forw_pressed = true;
 }
