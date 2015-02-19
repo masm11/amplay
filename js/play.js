@@ -123,6 +123,28 @@ function playSound(buffer, begtime) {
     return src;
 }
 
+function update_playtime() {
+    var max = cur_endtime - cur_begtime;
+    var cur = context.currentTime - cur_begtime;
+    if (isNaN(max))
+	max = 0;
+    if (isNaN(cur))
+	cur = 0;
+    max = Math.floor(max);
+    cur = Math.floor(cur);
+    var maxmin = Math.floor(max / 60);
+    var maxsec = max % 60;
+    var maxsec10 = Math.floor(maxsec / 10);
+    var maxsec01 = maxsec % 10;
+    var curmin = Math.floor(cur / 60);
+    var cursec = cur % 60;
+    var cursec10 = Math.floor(cursec / 10);
+    var cursec01 = cursec % 10;
+    document.getElementById('time').firstChild.nodeValue =
+	'' + curmin + ':' + cursec10 + cursec01 +
+	'/' + maxmin + ':' + maxsec10 + maxsec01;
+}
+
 var jump_pressed = false;
 var play_pressed = false;
 var back_pressed = false;
@@ -132,6 +154,8 @@ var pause_time = 0;
 
 var step = -1;
 function timer() {
+    update_playtime();
+    
     switch (step) {
     case -1:
 	// storage.enumerate() が終わるまで待つ。
@@ -154,7 +178,7 @@ function timer() {
     case 1:
 	// decode が完了したら再生開始。
 	if (decoded_buffer) {
-	    cur_begtime = context.currentTime + 1;
+	    cur_begtime = context.currentTime;
 	    cur_endtime = cur_begtime + decoded_buffer.duration;
 	    cur_buf = decoded_buffer;
 	    cur_src = playSound(cur_buf, cur_begtime);
@@ -635,25 +659,6 @@ window.onload = function() {
     audio.mozAudioChannelType = 'content';
     audio.addEventListener('timeupdate', function() {
 	seekbar.value = audio.currentTime;
-	var max = audio.duration;
-	var cur = audio.currentTime;
-	if (isNaN(max))
-	    max = 0;
-	if (isNaN(cur))
-	    cur = 0;
-	max = Math.floor(max);
-	cur = Math.floor(cur);
-	var maxmin = Math.floor(max / 60);
-	var maxsec = max % 60;
-	var maxsec10 = Math.floor(maxsec / 10);
-	var maxsec01 = maxsec % 10;
-	var curmin = Math.floor(cur / 60);
-	var cursec = cur % 60;
-	var cursec10 = Math.floor(cursec / 10);
-	var cursec01 = cursec % 10;
-	document.getElementById('time').firstChild.nodeValue =
-	    '' + curmin + ':' + cursec10 + cursec01 +
-	    '/' + maxmin + ':' + maxsec10 + maxsec01;
     });
     audio.addEventListener('loadedmetadata', function() {
 	seekbar.max = audio.duration;
