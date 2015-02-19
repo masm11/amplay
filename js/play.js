@@ -62,18 +62,18 @@ var storage = navigator.getDeviceStorage('music');
 /* curidx を local storage に保存。
  */
 function save_cur() {
-    localStorage.setItem('curidx', '' + curidx);
+    localStorage.setItem('cur_idx', '' + cur_idx);
 }
 
 /* curidx を local storage から読み出す。
  */
 function restore_cur() {
-    var idx = localStorage.getItem('curidx');
+    var idx = localStorage.getItem('cur_idx');
     if (idx)
-	curidx = idx * 1;	// "*1": 数値に変換
+	cur_idx = idx * 1;	// "*1": 数値に変換
+    else
+	cur_idx = 0;
 }
-
-// restore_cur();
 
 function switch_play_pause_button(pp) {
     if (pp) {
@@ -123,6 +123,10 @@ function playSound(buffer, begtime) {
     return src;
 }
 
+var jump_pressed = false;
+var play_pressed = false;
+var back_pressed = false;
+var forw_pressed = false;
 var pause_pressed = false;
 var pause_time = 0;
 
@@ -131,9 +135,12 @@ function timer() {
     switch (step) {
     case -1:
 	// storage.enumerate() が終わるまで待つ。
-	if (cur_idx >= 0)
+	if (cur_idx >= 0 && play_pressed) {
+	    play_pressed = false;
 	    step++;
+	}
 	break;
+	
     case 0:
 	// 最初の曲の decode を開始
 	if (true) {
@@ -164,10 +171,15 @@ function timer() {
 	}
 	break;
 	
-    case 2:
+    case 2:	// 通常再生中
 	if (pause_pressed) {
 	    pause_pressed = false;
 	    step = 11;
+	    break;
+	}
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
 	    break;
 	}
 	
@@ -179,6 +191,11 @@ function timer() {
 	    cur_buf = next_buf;
 	    cur_src = next_src;
 	    cur_idx = next_idx;
+
+	    next_begtime = 0;
+	    next_endtime = 0;
+	    next_buf = undefined;
+	    next_src = undefined;
 	    
 	    // 更に次の曲をキューイング処理開始。
 	    next_idx = cur_idx + 1;
@@ -187,6 +204,8 @@ function timer() {
 	    var url = window.URL.createObjectURL(files[next_idx]);
 	    loadSound(url);
 	    
+	    save_cur();
+
 	    step++;
 	}
 	break;
@@ -195,6 +214,11 @@ function timer() {
 	if (pause_pressed) {
 	    pause_pressed = false;
 	    step = 11;
+	    break;
+	}
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
 	    break;
 	}
 	
@@ -214,7 +238,7 @@ function timer() {
     case 4:
 	break;
 
-    case 11:
+    case 11:	// 一時停止
 	// 再生時刻の保存。
 	pause_time = context.currentTime - cur_begtime;
 
@@ -233,8 +257,14 @@ function timer() {
 	break;
 
     case 12:
-	if (pause_pressed) {
-	    pause_pressed = false;
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
+	    break;
+	}
+	
+	if (play_pressed) {
+	    play_pressed = false;
 
 	    if (cur_buf) {
 		cur_src = context.createBufferSource();
@@ -258,6 +288,37 @@ function timer() {
 	    step = 2;
 	}
 	break;
+
+    case 21:	// 頭出し forward
+	if (next_src) {
+	    next_src.disconnect();
+	    next_src = undefined;
+	}
+	if (cur_src) {
+	    cur_src.disconnect();
+	    cur_src = undefined;
+	}
+
+	if (next_buf) {
+	    cur_begtime = context.currentTime;
+	    cur_endtime = cur_begtime + next_buf.duration;
+	    cur_buf = next_buf;
+	    cur_src = playSound(cur_buf, cur_begtime);
+	    cur_idx = next_idx;
+
+	    next_begtime = cur_begtime;
+	    next_endtime = cur_endtime;
+	    next_buf = cur_buf;
+	    next_src = cur_src;
+	    next_idx = cur_idx;
+
+	    step = 2;
+	} else {
+	    if (++cur_idx >= files.length)
+		cur_idx = 0;
+	    step = 0;
+	}
+	break;
     }
 }
 
@@ -266,39 +327,11 @@ window.setInterval(timer, 100);
 /* そのまま再生。
  */
 function play() {
-    audio.play();
-    playing = true;
+    play_pressed = true;
     switch_play_pause_button(true);
-}
-
-/* curidx で示される曲を最初から再生。
- */
-function play_cur() {
-    if (files.length <= 0) {
-	set_msg('No audio files.');
-	alert('No audio files.');
-	return;
-    }
-    
-    if (curidx < 0 || curidx >= files.length) {
-	set_msg('No such idx.' + curidx);
-	curidx = 0;
-    }
-    
-//    set_msg('' + audio);
-    audio.src = window.URL.createObjectURL(files[curidx]);
-//    set_msg('' + audio.src);
-    audio.play();
-    playing = true;
-    switch_play_pause_button(true);
-    audio.addEventListener('ended', play_next);
-    
-    save_cur();
 }
 
 function play_seek() {
-    set_msg('play_seek: 0');
-    
     set_msg('play_seek: 1: ' + this.value);
     audio.currentTime = this.value;
 }
@@ -306,21 +339,13 @@ function play_seek() {
 /* 前の曲を再生。
  */
 function play_prev() {
-    if (audio.currentTime < 3) {
-	if (--curidx < 0)
-	    curidx = files.length - 1;
-	play_cur();
-    } else {
-	audio.currentTime = 0;
-    }
+    back_pressed = true;
 }
 
 /* 次の曲を再生。
  */
 function play_next() {
-    if (++curidx >= files.length)
-	curidx = 0;
-    play_cur();
+    forw_pressed = true;
 }
 
 function mrc_play() {
@@ -351,30 +376,18 @@ function mrc_prev() {
 
 function mrc_updateplaystatus(e) {
     set_msg('mrc updateplaystatus: ' + e.detail['command']);
-/*
-    if (playing)
-	pause();
-    else
-	play();
-*/
 }
 
 function mrc_updatemetadata(e) {
     set_msg('mrc updatemetadata: ' + e.detail['command']);
-    if (playing)
-	pause();
+    pause();
 }
 
 /* 一時停止
  */
 function pause() {
-//set_msg('stop1');
-//set_msg('stop2');
     pause_pressed = true;
-    audio.pause();
-    playing = false;
     switch_play_pause_button(false);
-//set_msg('stop3');
 }
 
 var radio = navigator.mozFMRadio;
@@ -385,7 +398,7 @@ function play_or_stop() {
 set_msg('r1');
     if (radio.antennaAvailable) {
 set_msg('r2');
-	play_cur();
+	play_pressed = true;
 set_msg('r3');
     } else {
 set_msg('r4');
@@ -404,9 +417,9 @@ if (radio)
 function play_on_click(id) {
     var mid = id;
     return function() {
-	curidx = mid;
-	play_cur();
-	screen_change();
+	jump_to = mid;
+	jump_pressed = true;
+//	screen_change();
     }
 }
 
@@ -726,12 +739,7 @@ window.onload = function() {
 		files.sort(cmp_files);
 		set_msg('done.');
 		
-		// audio の src をセット
-//		play_cur();
-//		pause();
-		cur_idx = 0;
-//		var url = window.URL.createObjectURL(files[curidx]);
-//		loadSound(url);
+		restore_cur();
 		
 		screen_change();
 
