@@ -177,8 +177,10 @@ function update_seekbar() {
     seekbar.value = cur;
 }
 
-var jump_to = 0;
-var jump_pressed = false;
+var seek_to = 0;
+var seek_pressed = false;
+var chng_to = 0;
+var chng_pressed = false;
 var play_pressed = false;
 var back_pressed = false;
 var forw_pressed = false;
@@ -246,9 +248,14 @@ function timer() {
 	    step = 31;
 	    break;
 	}
-	if (jump_pressed) {
-	    jump_pressed = false;
+	if (chng_pressed) {
+	    chng_pressed = false;
 	    step = 41;
+	    break;
+	}
+	if (seek_pressed) {
+	    seek_pressed = false;
+	    step = 51;
 	    break;
 	}
 	
@@ -295,9 +302,14 @@ function timer() {
 	    step = 31;
 	    break;
 	}
-	if (jump_pressed) {
-	    jump_pressed = false;
+	if (chng_pressed) {
+	    chng_pressed = false;
 	    step = 41;
+	    break;
+	}
+	if (seek_pressed) {
+	    seek_pressed = false;
+	    step = 51;
 	    break;
 	}
 	
@@ -432,7 +444,7 @@ function timer() {
 	}
 	break;
 
-    case 41:	// jump
+    case 41:	// 曲選択
 	if (next_src) {
 	    next_src.disconnect();
 	    next_src = undefined;
@@ -442,8 +454,33 @@ function timer() {
 	    cur_src = undefined;
 	}
 	
-	cur_idx = jump_to;
+	cur_idx = chng_to;
 	step = 0;
+	break;
+
+    case 51:	// seek
+	if (next_src) {
+	    next_src.disconnect();
+	    next_src = undefined;
+	}
+	if (cur_src) {
+	    cur_src.disconnect();
+	    cur_src = undefined;
+	}
+	
+	cur_begtime = context.currentTime - seek_to;
+	cur_endtime = cur_begtime + cur_buf.duration;
+	cur_src = context.createBufferSource();
+	cur_src.buffer = cur_buf;
+	cur_src.connect(context.destination);
+	cur_src.start(context.currentTime, seek_to);
+	
+	if (next_buf) {
+	    next_begtime = cur_endtime;
+	    next_endtime = next_begtime + next_buf.duration;
+	    next_src = playSound(next_buf, next_begtime);
+	}
+	step = 2;
 	break;
     }
 }
@@ -457,7 +494,8 @@ function play() {
 
 function play_seek() {
     set_msg('play_seek: 1: ' + this.value);
-//    audio.currentTime = this.value;
+    seek_to = this.value;
+    seek_pressed = true;
 }
 
 function play_prev() {
@@ -537,8 +575,8 @@ if (radio)
 function play_on_click(id) {
     var mid = id;
     return function() {
-	jump_to = mid;
-	jump_pressed = true;
+	chng_to = mid;
+	chng_pressed = true;
 //	screen_change();
     }
 }
