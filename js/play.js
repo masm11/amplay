@@ -145,6 +145,7 @@ function update_playtime() {
 	'/' + maxmin + ':' + maxsec10 + maxsec01;
 }
 
+var jump_to = 0;
 var jump_pressed = false;
 var play_pressed = false;
 var back_pressed = false;
@@ -211,6 +212,11 @@ function timer() {
 	    step = 31;
 	    break;
 	}
+	if (jump_pressed) {
+	    jump_pressed = false;
+	    step = 41;
+	    break;
+	}
 	
 	// 次の曲の再生が始まったら、その次の曲をキューイング。
 	if (context.currentTime >= next_begtime) {
@@ -253,6 +259,11 @@ function timer() {
 	if (back_pressed) {
 	    back_pressed = false;
 	    step = 31;
+	    break;
+	}
+	if (jump_pressed) {
+	    jump_pressed = false;
+	    step = 41;
 	    break;
 	}
 	
@@ -385,6 +396,20 @@ function timer() {
 	    
 	    step = 2;
 	}
+	break;
+
+    case 41:	// jump
+	if (next_src) {
+	    next_src.disconnect();
+	    next_src = undefined;
+	}
+	if (cur_src) {
+	    cur_src.disconnect();
+	    cur_src = undefined;
+	}
+	
+	cur_idx = jump_to;
+	step = 0;
 	break;
     }
 }
