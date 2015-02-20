@@ -168,6 +168,15 @@ function update_metadata() {
     }
 }
 
+function update_seekbar() {
+    var seekbar = document.getElementById('seekbar');
+    var max = cur_endtime - cur_begtime;
+    var cur = context.currentTime - cur_begtime;
+    if (seekbar.max != max)
+	seekbar.max = max;
+    seekbar.value = cur;
+}
+
 var jump_to = 0;
 var jump_pressed = false;
 var play_pressed = false;
@@ -180,6 +189,7 @@ var step = -1;
 function timer() {
     update_playtime();
     update_metadata();
+    update_seekbar();
     
     switch (step) {
     case -1:
@@ -747,28 +757,6 @@ window.onload = function() {
     seekbar.addEventListener('change', play_seek, false);
     set_msg('onload2');
 
-    audio = new Audio();
-    audio.mozAudioChannelType = 'content';
-    audio.addEventListener('timeupdate', function() {
-	seekbar.value = audio.currentTime;
-    });
-    audio.addEventListener('loadedmetadata', function() {
-	seekbar.max = audio.duration;
-//	set_msg('metadata loaded.');
-	var meta = audio.mozGetMetadata();
-//	set_msg('metadata.' + meta);
-//	set_msg('metadata.keys=' + Object.keys(meta));
-	var lastslash = files[curidx].name.lastIndexOf('/');
-	var notdir;
-	if (lastslash >= 0)
-	    notdir = files[curidx].name.substring(lastslash + 1);
-	else
-	    notdir = files[curidx].name;
-	document.getElementById('filename').firstChild.nodeValue = notdir;
-	document.getElementById('title').firstChild.nodeValue = (meta.TITLE || '不明なタイトル');
-	document.getElementById('artist').firstChild.nodeValue = (meta.ARTIST || '不明なアーティスト');
-    });
-    
     set_msg('onload0');
     var sel = document.getElementById('prev')
     set_msg('onload1');
