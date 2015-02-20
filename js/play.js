@@ -206,6 +206,11 @@ function timer() {
 	    step = 21;
 	    break;
 	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
+	    break;
+	}
 	
 	// 次の曲の再生が始まったら、その次の曲をキューイング。
 	if (context.currentTime >= next_begtime) {
@@ -243,6 +248,11 @@ function timer() {
 	if (forw_pressed) {
 	    forw_pressed = false;
 	    step = 21;
+	    break;
+	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
 	    break;
 	}
 	
@@ -284,6 +294,11 @@ function timer() {
 	if (forw_pressed) {
 	    forw_pressed = false;
 	    step = 21;
+	    break;
+	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
 	    break;
 	}
 	
@@ -341,6 +356,34 @@ function timer() {
 	    if (++cur_idx >= files.length)
 		cur_idx = 0;
 	    step = 0;
+	}
+	break;
+
+    case 31:	// 頭出し backward
+	if (next_src) {
+	    next_src.disconnect();
+	    next_src = undefined;
+	}
+	if (cur_src) {
+	    cur_src.disconnect();
+	    cur_src = undefined;
+	}
+	if (context.currentTime - cur_begtime < 3) {
+	    if (--cur_idx < 0)
+		cur_idx = files.length - 1;
+	    step = 0;
+	} else {
+	    cur_begtime = context.currentTime;
+	    cur_endtime = cur_begtime + cur_buf.duration;
+	    cur_src = playSound(cur_buf, cur_begtime);
+
+	    if (next_buf) {
+		next_begtime = cur_endtime;
+		next_endtime = next_begtime + next_buf.duration;
+		next_src = playSound(next_buf, next_begtime);
+	    }
+	    
+	    step = 2;
 	}
 	break;
     }
