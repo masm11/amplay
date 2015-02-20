@@ -145,6 +145,29 @@ function update_playtime() {
 	'/' + maxmin + ':' + maxsec10 + maxsec01;
 }
 
+var metadata_last_idx = -1;
+function update_metadata() {
+    if (metadata_last_idx != cur_idx) {
+	metadata_last_idx = cur_idx;
+	
+	var fname = files[cur_idx].name;
+	var audio = new Audio(window.URL.createObjectURL(files[cur_idx]));
+	audio.addEventListener('loadedmetadata', function() {
+	    var meta = audio.mozGetMetadata();
+	    var lastslash = fname.lastIndexOf('/');
+	    var notdir;
+	    if (lastslash >= 0)
+		notdir = fname.substring(lastslash + 1);
+	    else
+		notdir = fname;
+	    
+	    document.getElementById('filename').firstChild.nodeValue = notdir;
+	    document.getElementById('title').firstChild.nodeValue = (meta.TITLE || '不明なタイトル');
+	    document.getElementById('artist').firstChild.nodeValue = (meta.ARTIST || '不明なアーティスト');
+	});
+    }
+}
+
 var jump_to = 0;
 var jump_pressed = false;
 var play_pressed = false;
@@ -156,6 +179,7 @@ var pause_time = 0;
 var step = -1;
 function timer() {
     update_playtime();
+    update_metadata();
     
     switch (step) {
     case -1:
