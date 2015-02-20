@@ -457,7 +457,7 @@ function play() {
 
 function play_seek() {
     set_msg('play_seek: 1: ' + this.value);
-    audio.currentTime = this.value;
+//    audio.currentTime = this.value;
 }
 
 function play_prev() {
@@ -628,13 +628,7 @@ function make_select_screen_iter_file() {
     var artist = document.createTextNode('artist');
     artist_span.appendChild(artist);
     
-    if (!audio.canPlayType(files[idxs[idx]].type)) {
-	title.nodeValue = '不明なタイトル';
-	artist.nodeValue = '不明なアーティスト';
-	
-	idx++;
-	make_select_screen_iter_file();
-    } else if (files[idxs[idx]].name.indexOf('.wav', 0) >= 0) {
+    if (files[idxs[idx]].name.indexOf('.wav', 0) >= 0) {
 	// イベントが飛んでこない...
 	title.nodeValue = '不明なタイトル';
 	artist.nodeValue = '不明なアーティスト';
