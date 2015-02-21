@@ -90,6 +90,14 @@ var context = new AudioContext('content');
 var xhr;
 var decoded_buffer;
 
+function decodeSound() {
+    context.decodeAudioData(this.response, function(buffer) {
+	decoded_buffer = buffer;
+    }, function() {
+	alert('decode error.');
+    });
+}
+
 function loadSound(url) {
     xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -97,17 +105,9 @@ function loadSound(url) {
     decoded_buffer = undefined;
     
     // Decode asynchronously
-    xhr.onload = function() {
-	context.decodeAudioData(xhr.response, function(buffer) {
-		decoded_buffer = buffer;
-	}, function() {
-	    alert('decode error.');
-	});
-	xhr = undefined;
-    };
+    xhr.onload = decodeSound;
     xhr.onerror = function() {
 	alert('xhr.onerror.');
-	xhr = undefined;
     };
     xhr.send();
 }
@@ -175,6 +175,50 @@ function update_seekbar() {
     if (seekbar.max != max)
 	seekbar.max = max;
     seekbar.value = cur;
+}
+
+function stop() {
+    if (next_src) {
+	next_src.disconnect();
+	next_src = undefined;
+    }
+    if (cur_src) {
+	cur_src.disconnect();
+	cur_src = undefined;
+    }
+}
+
+function playSound3(buf, time, buf2) {
+    if (buf) {
+	cur_begtime = context.currentTime - time;
+	cur_endtime = cur_begtime + buf.duration;
+	cur_buf = buf;
+	cur_src = context.createBufferSource();
+	cur_src.buffer = cur_buf;
+	cur_src.connect(context.destination);
+	cur_src.start(context.currentTime, time);
+    } else {
+	cur_begtime = 0;
+	cur_endtime = 0;
+	cur_buf = undefined;
+	cur_src = undefined;
+    }
+    
+    if (buf2) {
+	next_begtime = cur_endtime;
+	next_endtime = next_begtime + buf2.duration;
+	next_buf = buf2;
+	next_src = context.createBufferSource();
+	next_src.buffer = next_buf;
+	next_src.connect(context.destination);
+	next_src.start(next_begtime);
+    } else {
+	next_begtime = 0;
+	next_endtime = 0;
+	next_buf = undefined;
+	next_src = undefined;
+	next_idx = -1;
+    }
 }
 
 var seek_to = 0;
@@ -267,7 +311,7 @@ function timer() {
 	    cur_buf = next_buf;
 	    cur_src = next_src;
 	    cur_idx = next_idx;
-
+	    
 	    next_begtime = 0;
 	    next_endtime = 0;
 	    next_buf = undefined;
@@ -281,7 +325,7 @@ function timer() {
 	    loadSound(url);
 	    
 	    save_cur();
-
+	    
 	    step++;
 	}
 	break;
@@ -328,25 +372,19 @@ function timer() {
 	
     case 4:
 	break;
-
+	
     case 11:	// 一時停止
 	// 再生時刻の保存。
 	pause_time = context.currentTime - cur_begtime;
-
+	
 	playing = false;
 	
 	// 再生を止める。
-	if (next_src) {
-	    next_src.disconnect();
-	    next_src = undefined;
-	}
-	if (cur_src) {
-	    cur_src.disconnect();
-	    cur_src = undefined;
-	}
+	stop();
+	
 	step++;
 	break;
-
+	
     case 12:
 	if (forw_pressed) {
 	    forw_pressed = false;
@@ -361,53 +399,25 @@ function timer() {
 	
 	if (play_pressed) {
 	    play_pressed = false;
-
-	    if (cur_buf) {
-		cur_src = context.createBufferSource();
-		cur_src.buffer = cur_buf;
-		cur_src.connect(context.destination);
-		cur_src.start(context.currentTime, pause_time);
-
-		cur_begtime = context.currentTime - pause_time;
-		cur_endtime = cur_begtime + cur_buf.duration;;
-	    }
 	    
-	    if (next_buf) {
-		next_src = context.createBufferSource();
-		next_src.buffer = next_buf;
-		next_src.connect(context.destination);
-		next_begtime = cur_endtime;
-		next_endtime = next_begtime + next_buf.duration;
-		next_src.start(next_begtime);
-	    }
+	    playSound3(cur_buf, pause_time, next_buf);
 	    
 	    step = 2;
 	}
 	break;
-
+	
     case 21:	// 頭出し forward
-	if (next_src) {
-	    next_src.disconnect();
-	    next_src = undefined;
-	}
-	if (cur_src) {
-	    cur_src.disconnect();
-	    cur_src = undefined;
-	}
-
+	stop();
+	
 	if (next_buf) {
-	    cur_begtime = context.currentTime;
-	    cur_endtime = cur_begtime + next_buf.duration;
-	    cur_buf = next_buf;
-	    cur_src = playSound(cur_buf, cur_begtime);
-	    cur_idx = next_idx;
-
+	    playSound3(next_buf, 0, undefined);
+	    
 	    next_begtime = cur_begtime;
 	    next_endtime = cur_endtime;
 	    next_buf = cur_buf;
 	    next_src = cur_src;
 	    next_idx = cur_idx;
-
+	    
 	    step = 2;
 	} else {
 	    if (++cur_idx >= files.length)
@@ -415,71 +425,32 @@ function timer() {
 	    step = 0;
 	}
 	break;
-
+	
     case 31:	// 頭出し backward
-	if (next_src) {
-	    next_src.disconnect();
-	    next_src = undefined;
-	}
-	if (cur_src) {
-	    cur_src.disconnect();
-	    cur_src = undefined;
-	}
+	stop();
+	
 	if (context.currentTime - cur_begtime < 3) {
 	    if (--cur_idx < 0)
 		cur_idx = files.length - 1;
 	    step = 0;
 	} else {
-	    cur_begtime = context.currentTime;
-	    cur_endtime = cur_begtime + cur_buf.duration;
-	    cur_src = playSound(cur_buf, cur_begtime);
-
-	    if (next_buf) {
-		next_begtime = cur_endtime;
-		next_endtime = next_begtime + next_buf.duration;
-		next_src = playSound(next_buf, next_begtime);
-	    }
+	    playSound3(cur_buf, 0, next_buf);
 	    
 	    step = 2;
 	}
 	break;
-
+	
     case 41:	// 曲選択
-	if (next_src) {
-	    next_src.disconnect();
-	    next_src = undefined;
-	}
-	if (cur_src) {
-	    cur_src.disconnect();
-	    cur_src = undefined;
-	}
+	stop();
 	
 	cur_idx = chng_to;
 	step = 0;
 	break;
-
+	
     case 51:	// seek
-	if (next_src) {
-	    next_src.disconnect();
-	    next_src = undefined;
-	}
-	if (cur_src) {
-	    cur_src.disconnect();
-	    cur_src = undefined;
-	}
+	stop();
 	
-	cur_begtime = context.currentTime - seek_to;
-	cur_endtime = cur_begtime + cur_buf.duration;
-	cur_src = context.createBufferSource();
-	cur_src.buffer = cur_buf;
-	cur_src.connect(context.destination);
-	cur_src.start(context.currentTime, seek_to);
-	
-	if (next_buf) {
-	    next_begtime = cur_endtime;
-	    next_endtime = next_begtime + next_buf.duration;
-	    next_src = playSound(next_buf, next_begtime);
-	}
+	playSound3(cur_buf, seek_to, next_buf);
 	step = 2;
 	break;
     }
@@ -553,15 +524,15 @@ var radio = navigator.mozFMRadio;
 /* イヤホン挿抜で再生/停止。
  */
 function play_or_stop() {
-set_msg('r1');
+    set_msg('r1');
     if (radio.antennaAvailable) {
-set_msg('r2');
+	set_msg('r2');
 	play_pressed = true;
-set_msg('r3');
+	set_msg('r3');
     } else {
-set_msg('r4');
+	set_msg('r4');
 	pause();
-set_msg('r5');
+	set_msg('r5');
     }
 }
 
@@ -577,7 +548,7 @@ function play_on_click(id) {
     return function() {
 	chng_to = mid;
 	chng_pressed = true;
-//	screen_change();
+	//	screen_change();
     }
 }
 
@@ -635,7 +606,7 @@ function make_select_screen_iter_file() {
 	return;
     }
     
-//    set_msg('' + files[idxs[idx]].name);
+    //    set_msg('' + files[idxs[idx]].name);
     var li = document.createElement("li");
     parents[idx].appendChild(li);
     
@@ -788,7 +759,7 @@ window.onload = function() {
     set_msg('onload1');
     seekbar.addEventListener('change', play_seek, false);
     set_msg('onload2');
-
+    
     set_msg('onload0');
     var sel = document.getElementById('prev')
     set_msg('onload1');
@@ -837,7 +808,7 @@ window.onload = function() {
     mrc.addCommandListener('updatemetadata', mrc_updatemetadata);
     mrc.start();
     set_msg('onload13');
-
+    
     if (storage) {
 	var cursor = storage.enumerate();
 	cursor.onsuccess = function() {
@@ -853,7 +824,7 @@ window.onload = function() {
 		restore_cur();
 		
 		screen_change();
-
+		
 		make_select_screen();
 	    }
 	}
@@ -865,6 +836,6 @@ window.onload = function() {
 	set_msg('No music storage.');
 	alert('No music storage.');
     }
-
+    
     logo_init();
 };
