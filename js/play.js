@@ -250,6 +250,17 @@ function timer() {
 	break;
 	
     case 0:
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
+	    break;
+	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
+	    break;
+	}
+	
 	// 最初の曲の decode を開始
 	if (true) {
 	    var url = window.URL.createObjectURL(files[cur_idx]);
@@ -260,6 +271,17 @@ function timer() {
 	break;
 	
     case 1:
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
+	    break;
+	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
+	    break;
+	}
+	
 	// decode が完了したら再生開始。
 	if (decoded_buffer) {
 	    cur_begtime = context.currentTime;
@@ -424,6 +446,8 @@ function timer() {
 	    
 	    step = 2;
 	} else {
+	    cur_buf = undefined;
+	    next_buf = undefined;
 	    if (++cur_idx >= files.length)
 		cur_idx = 0;
 	    step = 0;
@@ -434,6 +458,9 @@ function timer() {
 	stop();
 	
 	if (context.currentTime - cur_begtime < 3) {
+	    cur_buf = undefined;
+	    next_buf = undefined;
+	    
 	    if (--cur_idx < 0)
 		cur_idx = files.length - 1;
 	    step = 0;
@@ -446,6 +473,8 @@ function timer() {
 	
     case 41:	// 曲選択
 	stop();
+	cur_buf = undefined;
+	next_buf = undefined;
 	
 	cur_idx = chng_to;
 	step = 0;
@@ -461,7 +490,8 @@ function timer() {
     
     if (last_step != step) {
 	last_step = step;
-	set_msg('step=' + step + ', cur_idx=' + cur_idx + ', next_idx=' + next_idx);
+	set_msg('step=' + step + ', cur_idx=' + cur_idx + ', next_idx=' + next_idx +
+		', cur_buf=' + (cur_buf ? 'o' : 'x') + ', next_buf=' + ((next_buf && next_buf != cur_buf) ? 'o' : 'x'));
     }
 }
 
