@@ -69,9 +69,8 @@ function save_cur() {
  */
 function restore_cur() {
     var idx = localStorage.getItem('cur_idx');
-    if (idx)
-	cur_idx = idx * 1;	// "*1": 数値に変換
-    else
+    cur_idx = idx * 1;	// 「* 1」:数値に変換
+    if (cur_idx < 0 || cur_idx >= files.length)
 	cur_idx = 0;
 }
 
@@ -91,8 +90,10 @@ var xhr;
 var decoded_buffer;
 
 function decodeSound() {
+    var this_xhr = xhr;
     context.decodeAudioData(this.response, function(buffer) {
-	decoded_buffer = buffer;
+	if (this_xhr == xhr)
+	    decoded_buffer = buffer;
     }, function() {
 	alert('decode error.');
     });
@@ -232,6 +233,7 @@ var pause_pressed = false;
 var pause_time = 0;
 
 var step = -1;
+var last_step = -100;
 function timer() {
     update_playtime();
     update_metadata();
@@ -240,7 +242,8 @@ function timer() {
     switch (step) {
     case -1:
 	// storage.enumerate() が終わるまで待つ。
-	if (cur_idx >= 0 && play_pressed) {
+//	if (cur_idx >= 0 && play_pressed) {
+	if (cur_idx >= 0) {
 	    play_pressed = false;
 	    step++;
 	}
@@ -410,6 +413,7 @@ function timer() {
 	stop();
 	
 	if (next_buf) {
+	    cur_idx = next_idx;
 	    playSound3(next_buf, 0, undefined);
 	    
 	    next_begtime = cur_begtime;
@@ -453,6 +457,11 @@ function timer() {
 	playSound3(cur_buf, seek_to, next_buf);
 	step = 2;
 	break;
+    }
+    
+    if (last_step != step) {
+	last_step = step;
+	set_msg('step=' + step + ', cur_idx=' + cur_idx + ', next_idx=' + next_idx);
     }
 }
 
