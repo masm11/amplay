@@ -460,6 +460,7 @@ function timer() {
 	if (context.currentTime - cur_begtime < 3) {
 	    cur_buf = undefined;
 	    next_buf = undefined;
+	    next_idx = -1;
 	    
 	    if (--cur_idx < 0)
 		cur_idx = files.length - 1;
