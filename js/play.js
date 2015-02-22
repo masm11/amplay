@@ -446,16 +446,13 @@ debug();
 	switch (get_key()) {
 	case KEY_FORW:	step = 21; k = true;	break;
 	case KEY_BACK:	step = 31; k = true;	break;
+	case KEY_PLAY:
+	    playSound3(cur_buf, pause_time, next_buf);
+	    step = 2;
+	    k = true;
+	    break;
 	}
 	if (k) break;
-	
-	if (play_pressed) {
-	    play_pressed = false;
-	    
-	    playSound3(cur_buf, pause_time, next_buf);
-	    
-	    step = 2;
-	}
 	break;
 	
     case 21:	// 頭出し forward
