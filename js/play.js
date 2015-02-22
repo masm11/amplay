@@ -232,20 +232,43 @@ var forw_pressed = false;
 var pause_pressed = false;
 var pause_time = 0;
 
-var step = -1;
 var last_step = -100;
+var last_cur_idx = -2;
+var last_next_idx = -2;
+function debug() {
+    if (last_step != step) {
+	last_step = step;
+	set_msg('step=' + step);
+	console.log('step=' + step);
+    }
+    
+    if (last_cur_idx != cur_idx) {
+	last_cur_idx = cur_idx;
+	set_msg('cur_idx=' + cur_idx);
+	console.log('cur_idx=' + cur_idx);
+    }
+    
+    if (last_next_idx != next_idx) {
+	last_next_idx = next_idx;
+	set_msg('next_idx=' + next_idx);
+	console.log('next_idx=' + next_idx);
+    }
+}
+
+var step = -1;
 function timer() {
     update_playtime();
     update_metadata();
     update_seekbar();
     
+debug();
     switch (step) {
     case -1:
 	// storage.enumerate() が終わるまで待つ。
-//	if (cur_idx >= 0 && play_pressed) {
-	if (cur_idx >= 0) {
+	if (cur_idx >= 0 && play_pressed) {
 	    play_pressed = false;
 	    step++;
+debug();
 	}
 	break;
 	
@@ -253,11 +276,13 @@ function timer() {
 	if (forw_pressed) {
 	    forw_pressed = false;
 	    step = 21;
+debug();
 	    break;
 	}
 	if (back_pressed) {
 	    back_pressed = false;
 	    step = 31;
+debug();
 	    break;
 	}
 	
@@ -267,6 +292,7 @@ function timer() {
 	    loadSound(url);
 	    
 	    step++;
+debug();
 	}
 	break;
 	
@@ -274,11 +300,13 @@ function timer() {
 	if (forw_pressed) {
 	    forw_pressed = false;
 	    step = 21;
+debug();
 	    break;
 	}
 	if (back_pressed) {
 	    back_pressed = false;
 	    step = 31;
+debug();
 	    break;
 	}
 	
@@ -288,43 +316,142 @@ function timer() {
 	    cur_endtime = cur_begtime + decoded_buffer.duration;
 	    cur_buf = decoded_buffer;
 	    cur_src = playSound(cur_buf, cur_begtime);
-	    // 次の step で cur_xxx = next_xxx とするので、その対策。
-	    next_begtime = cur_begtime;
-	    next_endtime = cur_endtime;
-	    next_buf = cur_buf;
-	    next_src = cur_src;
-	    next_idx = cur_idx;
+debug();
 	    
 	    decoded_buffer = undefined;
 	    
 	    step++;
+debug();
 	}
 	break;
 	
-    case 2:	// 通常再生中
+    case 2:
 	if (pause_pressed) {
 	    pause_pressed = false;
 	    step = 11;
+debug();
 	    break;
 	}
 	if (forw_pressed) {
 	    forw_pressed = false;
 	    step = 21;
+debug();
 	    break;
 	}
 	if (back_pressed) {
 	    back_pressed = false;
 	    step = 31;
+debug();
 	    break;
 	}
 	if (chng_pressed) {
 	    chng_pressed = false;
 	    step = 41;
+debug();
 	    break;
 	}
 	if (seek_pressed) {
 	    seek_pressed = false;
 	    step = 51;
+debug();
+	    break;
+	}
+	
+	if (!next_buf) {
+	    next_idx = cur_idx + 1;
+	    if (next_idx >= files.length)
+		next_idx = 0;
+debug();
+	    // 次の曲の decode を開始。
+	    var url = window.URL.createObjectURL(files[next_idx]);
+	    loadSound(url);
+	}
+	step++;
+debug();
+	break;
+
+    case 3:
+	if (pause_pressed) {
+	    pause_pressed = false;
+	    step = 11;
+debug();
+	    break;
+	}
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
+debug();
+	    break;
+	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
+debug();
+	    break;
+	}
+	if (chng_pressed) {
+	    chng_pressed = false;
+	    step = 41;
+debug();
+	    break;
+	}
+	if (seek_pressed) {
+	    seek_pressed = false;
+	    step = 51;
+debug();
+	    break;
+	}
+	
+	if (next_buf) {
+	    // 次の曲は既に decode してあるので、する必要がない。
+	    step++;
+debug();
+	    break;
+	}
+	if (decoded_buffer) {
+	    // 次の曲の decode が完了。
+	    next_begtime = cur_endtime;
+	    next_endtime = next_begtime + decoded_buffer.duration;
+	    next_buf = decoded_buffer;
+	    next_src = playSound(next_buf, next_begtime);
+debug();
+	    
+	    decoded_buffer = undefined;
+	    
+	    step++;
+debug();
+	}
+	break;
+	
+    case 4:	// 通常再生状態
+	if (pause_pressed) {
+	    pause_pressed = false;
+	    step = 11;
+debug();
+	    break;
+	}
+	if (forw_pressed) {
+	    forw_pressed = false;
+	    step = 21;
+debug();
+	    break;
+	}
+	if (back_pressed) {
+	    back_pressed = false;
+	    step = 31;
+debug();
+	    break;
+	}
+	if (chng_pressed) {
+	    chng_pressed = false;
+	    step = 41;
+debug();
+	    break;
+	}
+	if (seek_pressed) {
+	    seek_pressed = false;
+	    step = 51;
+debug();
 	    break;
 	}
 	
@@ -336,66 +463,19 @@ function timer() {
 	    cur_buf = next_buf;
 	    cur_src = next_src;
 	    cur_idx = next_idx;
+debug();
 	    
 	    next_begtime = 0;
 	    next_endtime = 0;
 	    next_buf = undefined;
 	    next_src = undefined;
 	    
-	    // 更に次の曲をキューイング処理開始。
-	    next_idx = cur_idx + 1;
-	    if (next_idx >= files.length)
-		next_idx = 0;
-	    var url = window.URL.createObjectURL(files[next_idx]);
-	    loadSound(url);
-	    
 	    save_cur();
 	    
-	    step++;
+	    // 次の曲の decode。
+	    step -= 2;
+debug();
 	}
-	break;
-	
-    case 3:
-	if (pause_pressed) {
-	    pause_pressed = false;
-	    step = 11;
-	    break;
-	}
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-	    break;
-	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-	    break;
-	}
-	if (chng_pressed) {
-	    chng_pressed = false;
-	    step = 41;
-	    break;
-	}
-	if (seek_pressed) {
-	    seek_pressed = false;
-	    step = 51;
-	    break;
-	}
-	
-	// decode が完了したら再生準備。
-	if (decoded_buffer) {
-	    next_begtime = cur_endtime;
-	    next_endtime = next_begtime + decoded_buffer.duration;
-	    next_buf = decoded_buffer;
-	    next_src = playSound(next_buf, next_begtime);
-	    
-	    decoded_buffer = undefined;
-	    
-	    step--;
-	}
-	break;
-	
-    case 4:
 	break;
 	
     case 11:	// 一時停止
@@ -485,15 +565,12 @@ function timer() {
 	stop();
 	
 	playSound3(cur_buf, seek_to, next_buf);
+debug();
 	step = 2;
+debug();
 	break;
     }
-    
-    if (last_step != step) {
-	last_step = step;
-	set_msg('step=' + step + ', cur_idx=' + cur_idx + ', next_idx=' + next_idx +
-		', cur_buf=' + (cur_buf ? 'o' : 'x') + ', next_buf=' + ((next_buf && next_buf != cur_buf) ? 'o' : 'x'));
-    }
+debug();
 }
 
 window.setInterval(timer, 100);
