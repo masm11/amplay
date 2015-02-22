@@ -255,8 +255,40 @@ function debug() {
     }
 }
 
+var KEY_NONE = 0;
+var KEY_SEEK = 1;
+var KEY_CHANGE = 2;
+var KEY_PLAY = 3;
+var KEY_BACK = 4;
+var KEY_FORW = 5;
+var KEY_PAUSE = 6;
+
+function get_key() {
+    var rv = KEY_NONE;
+    
+    // 低優先
+    if (seek_pressed) rv = KEY_SEEK;
+    if (chng_pressed) rv = KEY_CHANGE;
+    if (play_pressed) rv = KEY_PLAY;
+    if (back_pressed) rv = KEY_BACK;
+    if (forw_pressed) rv = KEY_FORW;
+    if (pause_pressed) rv = KEY_PAUSE;	// pause は再優先
+    // 高優先
+    
+    seek_pressed = false;
+    chng_pressed = false;
+    play_pressed = false;
+    back_pressed = false;
+    forw_pressed = false;
+    pause_pressed = false;
+    
+    return rv;
+}
+
 var step = -1;
 function timer() {
+    var k = false;
+    
     update_playtime();
     update_metadata();
     update_seekbar();
@@ -265,26 +297,19 @@ debug();
     switch (step) {
     case -1:
 	// storage.enumerate() が終わるまで待つ。
-	if (cur_idx >= 0 && play_pressed) {
-	    play_pressed = false;
-	    step++;
+	if (cur_idx >= 0) {
+	    if (get_key() == KEY_PLAY)
+		step++;
 debug();
 	}
 	break;
 	
     case 0:
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-debug();
-	    break;
+	switch (get_key()) {
+	case KEY_FORW:	step = 21; k = true;	break;
+	case KEY_BACK:	step = 31; k = true;	break;
 	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-debug();
-	    break;
-	}
+	if (k) break;
 	
 	// 最初の曲の decode を開始
 	if (true) {
@@ -297,18 +322,11 @@ debug();
 	break;
 	
     case 1:
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-debug();
-	    break;
+	switch (get_key()) {
+	case KEY_FORW:	step = 21; k = true;	break;
+	case KEY_BACK:	step = 31; k = true;	break;
 	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-debug();
-	    break;
-	}
+	if (k) break;
 	
 	// decode が完了したら再生開始。
 	if (decoded_buffer) {
@@ -326,36 +344,14 @@ debug();
 	break;
 	
     case 2:
-	if (pause_pressed) {
-	    pause_pressed = false;
-	    step = 11;
-debug();
-	    break;
+	switch (get_key()) {
+	case KEY_PAUSE:	step = 11; k = true;	break;
+	case KEY_FORW:	step = 21; k = true;	break;
+	case KEY_BACK:	step = 31; k = true;	break;
+	case KEY_CHANGE:step = 41; k = true;	break;
+	case KEY_SEEK:	step = 51; k = true;	break;
 	}
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-debug();
-	    break;
-	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-debug();
-	    break;
-	}
-	if (chng_pressed) {
-	    chng_pressed = false;
-	    step = 41;
-debug();
-	    break;
-	}
-	if (seek_pressed) {
-	    seek_pressed = false;
-	    step = 51;
-debug();
-	    break;
-	}
+	if (k) break;
 	
 	if (!next_buf) {
 	    next_idx = cur_idx + 1;
@@ -371,36 +367,14 @@ debug();
 	break;
 
     case 3:
-	if (pause_pressed) {
-	    pause_pressed = false;
-	    step = 11;
-debug();
-	    break;
+	switch (get_key()) {
+	case KEY_PAUSE:	step = 11; k = true;	break;
+	case KEY_FORW:	step = 21; k = true;	break;
+	case KEY_BACK:	step = 31; k = true;	break;
+	case KEY_CHANGE:step = 41; k = true;	break;
+	case KEY_SEEK:	step = 51; k = true;	break;
 	}
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-debug();
-	    break;
-	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-debug();
-	    break;
-	}
-	if (chng_pressed) {
-	    chng_pressed = false;
-	    step = 41;
-debug();
-	    break;
-	}
-	if (seek_pressed) {
-	    seek_pressed = false;
-	    step = 51;
-debug();
-	    break;
-	}
+	if (k) break;
 	
 	if (next_buf) {
 	    // 次の曲は既に decode してあるので、する必要がない。
@@ -424,36 +398,14 @@ debug();
 	break;
 	
     case 4:	// 通常再生状態
-	if (pause_pressed) {
-	    pause_pressed = false;
-	    step = 11;
-debug();
-	    break;
+	switch (get_key()) {
+	case KEY_PAUSE:	step = 11; k = true;	break;
+	case KEY_FORW:	step = 21; k = true;	break;
+	case KEY_BACK:	step = 31; k = true;	break;
+	case KEY_CHANGE:step = 41; k = true;	break;
+	case KEY_SEEK:	step = 51; k = true;	break;
 	}
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-debug();
-	    break;
-	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-debug();
-	    break;
-	}
-	if (chng_pressed) {
-	    chng_pressed = false;
-	    step = 41;
-debug();
-	    break;
-	}
-	if (seek_pressed) {
-	    seek_pressed = false;
-	    step = 51;
-debug();
-	    break;
-	}
+	if (k) break;
 	
 	// 次の曲の再生が始まったら、その次の曲をキューイング。
 	if (context.currentTime >= next_begtime) {
@@ -491,16 +443,11 @@ debug();
 	break;
 	
     case 12:
-	if (forw_pressed) {
-	    forw_pressed = false;
-	    step = 21;
-	    break;
+	switch (get_key()) {
+	case KEY_FORW:	step = 21; k = true;	break;
+	case KEY_BACK:	step = 31; k = true;	break;
 	}
-	if (back_pressed) {
-	    back_pressed = false;
-	    step = 31;
-	    break;
-	}
+	if (k) break;
 	
 	if (play_pressed) {
 	    play_pressed = false;
@@ -518,11 +465,11 @@ debug();
 	    cur_idx = next_idx;
 	    playSound3(next_buf, 0, undefined);
 	    
-	    next_begtime = cur_begtime;
-	    next_endtime = cur_endtime;
-	    next_buf = cur_buf;
-	    next_src = cur_src;
-	    next_idx = cur_idx;
+	    next_begtime = 0;
+	    next_endtime = 0;
+	    next_buf = undefined;
+	    next_src = undefined;
+	    next_idx = -1;
 	    
 	    step = 2;
 	} else {
