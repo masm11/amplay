@@ -40,9 +40,11 @@ function screen_change() {
 }
 
 function cmp_files(f1, f2) {
-    if (f1.name < f2.name)
+    var f1_low = f1.name.toLowerCase();
+    var f2_low = f2.name.toLowerCase();
+    if (f1_low < f2_low)
 	return -1;
-    if (f1.name > f2.name)
+    if (f1_low > f2_low)
 	return 1;
     return 0;
 }
